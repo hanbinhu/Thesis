@@ -61,7 +61,7 @@
 \RequirePackage{graphicx}
 \RequirePackage{subfigure}
 \RequirePackage{ccaption}
-\RequirePackage[backend=biber, style=caspervector,utf8, bibencoding=utf8, sorting=none]{biblatex}
+\RequirePackage[backend=biber, style=biblatex-sjtuthesis, bibencoding=utf8, sorting=none]{biblatex}
 \RequirePackage{xcolor}
 \RequirePackage{wasysym}
 \RequirePackage{listings}
