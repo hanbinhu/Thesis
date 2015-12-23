@@ -281,6 +281,10 @@
 \newcommand\defenddate[1]{\def\sjtu@value@defenddate{#1}}
 \newcommand\institute[1]{\def\sjtu@value@institute{#1}}
 \newcommand\chairman[1]{\def\sjtu@value@chairman{#1}}
+\newcommand\funding[1]{\def\sjtu@value@funding{#1}}
+
+\RequirePackage{footnote}
+\RequirePackage{array}
 
 % “绘制”SJTU中文标题页
 \renewcommand\maketitle[1]{%
@@ -289,35 +293,45 @@
   \begin{center}
   {\songti\zihao{-2}\sjtu@label@statement}
   \vskip\stretch{1}
-  {\heiti\zihao{3}\sjtu@value@title}
+  \ifx\sjtu@value@funding\undefined
+    {\heiti\zihao{-2}\sjtu@value@title}
+  \else
+    {\heiti\zihao{-2}\sjtu@value@title\footnotemark[1]}
+  \fi
   \vskip\stretch{1}
   {\fangsong\zihao{4}}
   \def\tabcolsep{1pt}
   \def\arraystretch{1.5}
-  \begin{tabular}{rl}
-    \ifsjtu@review
-      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@author\end{CJKfilltwosides} & \underline{\makebox[150pt]{}}\\
-      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@studentnumber\end{CJKfilltwosides} & \underline{\makebox[150pt]{}} \\
-      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@advisor\end{CJKfilltwosides}  & \underline{\makebox[150pt]{}} \\ 
-      \ifx\sjtu@value@coadvisor\undefined\else
-        \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@coadvisor\end{CJKfilltwosides} & \underline{\makebox[150pt]{}} \\ 
-      \fi
-    \else
-      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@author\end{CJKfilltwosides}	& \underline{\makebox[150pt]{\sjtu@value@author}} \\
-      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@studentnumber\end{CJKfilltwosides} & \underline{\makebox[150pt]{\sjtu@value@studentnumber}} \\
-      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@advisor\end{CJKfilltwosides} 	 & \underline{\makebox[150pt]{\sjtu@value@advisor}} \\ 
-      \ifx\sjtu@value@coadvisor\undefined\else
-        \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@coadvisor\end{CJKfilltwosides} 	 & \underline{\makebox[150pt]{\sjtu@value@coadvisor}} \\ 
-      \fi
-    \fi
-      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@major\end{CJKfilltwosides} 	 & \underline{\makebox[150pt]{\sjtu@value@major}} \\
-      \begin{CJKfilltwosides}{4em}\heiti\sjtu@label@defenddate\end{CJKfilltwosides} 	 & \underline{\makebox[150pt]{\sjtu@value@defenddate}}
+  \begin{tabular}{p{3.2cm}@{：{ }}l} % change to ll, by chjd % delete >{\justified\arraybackslash}, by hhb
+  	\ifsjtu@review
+  	  \makebox[3.2cm][s]{\heiti\zihao{4}\sjtu@label@author} &	\\
+  	  \makebox[3.2cm][s]{\heiti\zihao{4}\sjtu@label@studentnumber} & \\
+  	  \makebox[3.2cm][s]{\heiti\zihao{4}\sjtu@label@advisor} & \\
+  	  \ifx\sjtu@value@coadvisor\undefined\else
+  	    \makebox[3.2cm][s]{\heiti\zihao{4}\sjtu@label@coadvisor} & \\
+	  \fi
+  	\else
+	  \makebox[3.2cm][s]{\heiti\zihao{4}\sjtu@label@author} &\songti\zihao{4}{\sjtu@value@author}	\\
+	  \makebox[3.2cm][s]{\heiti\zihao{4}\sjtu@label@studentnumber} &\songti\zihao{4}{\sjtu@value@studentnumber} \\
+	  \makebox[3.2cm][s]{\heiti\zihao{4}\sjtu@label@advisor} &\songti\zihao{4}{\sjtu@value@advisor} \\
+	  \ifx\sjtu@value@coadvisor\undefined\else
+		\makebox[3.2cm][s]{\heiti\zihao{4}\sjtu@label@coadvisor} &\songti\zihao{4}{\sjtu@value@coadvisor} \\
+	  \fi
+  	\fi
+  	\makebox[3.2cm][s]{\heiti\zihao{4}\sjtu@label@major} &\songti\zihao{4}{\sjtu@value@major} \\
+  	\makebox[3.2cm][s]{\heiti\zihao{4}\sjtu@label@institute} &\songti\zihao{4}{\sjtu@value@institute} \\
+  	\makebox[3.2cm][s]{\heiti\zihao{4}\sjtu@label@defenddate} &\songti\zihao{4}{\sjtu@value@defenddate}	\\
+  	\makebox[3.2cm][s]{\heiti\zihao{4}\sjtu@label@school} &\songti\zihao{4}{\sjtu@value@school}
   \end{tabular}
   \end{center}
   \vskip \stretch{0.5}
+  \ifx\sjtu@value@funding\undefined\else
+	\footnotetext[1]{\sjtu@value@funding}
+  \fi
   \cleardoublepage
 }
 
+\RequirePackage{setspace}
 
 % English Title Page
 \newcommand\englishtitle[1]{\def\sjtu@value@englishtitle{#1}}
@@ -334,31 +348,36 @@
   \cleardoublepage
   \thispagestyle{empty}
   \begin{center}
-      {\normalfont\zihao{4} \sjtu@label@englishstatement} 
+      {\normalfont\zihao{-2} \sjtu@label@englishstatement} 
       \vspace{20pt} \vskip\stretch{1}
-      {\huge\sjtu@value@englishtitle} 
+      {\begin{spacing}{1.0}\zihao{2} \textbf{\sjtu@value@englishtitle}\end{spacing}}
       \vskip \stretch{1}
-    \ifsjtu@review
-      \vskip \stretch{1}
-      \vskip 3pt
-      \vskip \stretch{2}
-    \else
-      {\normalfont\zihao{4}\sjtu@value@englishauthor} 
-      \vskip \stretch{1}
-      {\normalfont\zihao{4}\sjtu@label@englishadvisor} 
-      \vskip 2pt
-      {\normalfont\zihao{4}\sjtu@value@englishadvisor} 
-      \vskip 5pt
-      \ifx\sjtu@value@englishcoadvisor\undefined\else
-        {\normalfont\zihao{4}\sjtu@label@englishcoadvisor} 
-        \vskip 2pt
-        {\normalfont\zihao{4}\sjtu@value@englishcoadvisor} 
-        \vskip \stretch{2}
-      \fi
-    \fi 
-    \normalfont\sjtu@value@englishinstitute \vskip 30pt
-    \normalfont\sjtu@value@englishdate \vskip 20pt
+      \def\tabcolsep{0.3cm}
+      \def\arraystretch{1.5}
+      \begin{tabular}{ll}
+      	\ifsjtu@review
+          {\normalfont\zihao{4} \textbf{\sjtu@label@englishauthor}}  & \\
+      	  {\normalfont\zihao{4} \textbf{\sjtu@label@englishstudentnumber}}  & \\
+      	  {\normalfont\zihao{4} \textbf{\sjtu@label@englishadvisor}}  & \\
+      	  \ifx\sjtu@value@englishcoadvisor\undefined\else
+      	    {\normalfont\zihao{4} \textbf{\sjtu@label@englishcoadvisor}}  & \\
+      	  \fi
+      	\else
+      	  {\normalfont\zihao{4} \textbf{\sjtu@label@englishauthor}}  & {\normalfont\zihao{4} \sjtu@value@englishauthor} \\
+      	  {\normalfont\zihao{4} \textbf{\sjtu@label@englishstudentnumber}}  & {\normalfont\zihao{4} \sjtu@value@studentnumber} \\
+      	  {\normalfont\zihao{4} \textbf{\sjtu@label@englishadvisor}}  & {\normalfont\zihao{4} \sjtu@value@englishadvisor} \\
+      	  \ifx\sjtu@value@englishcoadvisor\undefined\else
+      	    {\normalfont\zihao{4} \textbf{\sjtu@label@englishcoadvisor}}  & {\normalfont\zihao{4} \sjtu@value@englishcoadvisor} \\
+      	  \fi
+      	\fi
+      	{\normalfont\zihao{4} \textbf{\sjtu@label@englishdegree}}  & {\normalfont\zihao{4} \sjtu@value@englishdegree} \\
+      	{\normalfont\zihao{4} \textbf{\sjtu@label@englishmajor}}  & {\normalfont\zihao{4} \sjtu@value@englishmajor} \\
+      	{\normalfont\zihao{4} \textbf{\sjtu@label@englishinstitute}}  & {\normalfont\zihao{4} \sjtu@value@englishinstitute} \\
+      	{\normalfont\zihao{4} \textbf{\sjtu@label@englishdefenddate}}  & {\normalfont\zihao{4} \sjtu@value@englishdate} \\
+      	{\normalfont\zihao{4} \textbf{\sjtu@label@englishschool}}  & {\normalfont\zihao{4} \sjtu@value@englishschool} \\
+      \end{tabular}
   \end{center}
+  \vskip \stretch{0.5}
   \cleardoublepage
 }
 
@@ -372,13 +391,9 @@
   	{\heiti\zihao{-2} \sjtu@label@original}
   \end{center}
   \vskip 12pt
-  \linespread{2}
-  {\par\zihao{4}\sjtu@label@originalcontent\par}
-  \linespread{1.3}
-  %{\par\zihao{-4}\sjtu@label@originalcontent\par}
+  {\par\begin{spacing}{2}\zihao{4}\sjtu@label@originalcontent\end{spacing}\par}
   \vskip 100pt
   {\hspace{14em}\zihao{4}\sjtu@label@authorsign\hspace{1.5em}}
-  %\hspace{13em}\sjtu@label@authorsign\hrulefill\hspace{1.5em}
   \vskip 40pt
   {\hspace{12em}\zihao{4}\sjtu@label@originalDate\hspace{1.5em}}
   \clearpage
@@ -396,9 +411,7 @@
   	{\heiti\zihao{-2} \sjtu@label@authorization}
   \end{center}
   \vskip 12pt
-  \linespread{1.8}
-  {\par\zihao{4}\sjtu@label@authorizationcontent\par}
-  \linespread{1.3}
+  {\par\begin{spacing}{1.8}\zihao{4}\sjtu@label@authorizationcontent\end{spacing}\par}
   \vskip 150pt
   {\hspace{2.5em}\zihao{4}\sjtu@label@authorsign\hspace{7.5em}\zihao{4}\sjtu@label@Supervisorsign}
   \vskip 30pt
