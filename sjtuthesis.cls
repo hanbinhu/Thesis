@@ -367,15 +367,21 @@
   \cleardoublepage
   \thispagestyle{empty}
   \begin{center}
-  	{\bf\zihao{3} \sjtu@value@school}\\
-  	{\bf\zihao{3} \sjtu@label@original}
+  	{\heiti\zihao{-2} \sjtu@value@school}\\
+  	\vskip 10pt
+  	{\heiti\zihao{-2} \sjtu@label@original}
   \end{center}
-  \vskip 10pt
-  {\par\zihao{-4}\sjtu@label@originalcontent\par}
-  \vskip 60pt
-  \hspace{13em}\sjtu@label@authorsign\hrulefill\hspace{1.5em}
-  \vskip 15pt
-  \hspace{16em}\sjtu@label@originalDate\hspace{1em}
+  \vskip 12pt
+  \linespread{2}
+  {\par\zihao{4}\sjtu@label@originalcontent\par}
+  \linespread{1.3}
+  %{\par\zihao{-4}\sjtu@label@originalcontent\par}
+  \vskip 100pt
+  {\hspace{14em}\zihao{4}\sjtu@label@authorsign\hspace{1.5em}}
+  %\hspace{13em}\sjtu@label@authorsign\hrulefill\hspace{1.5em}
+  \vskip 40pt
+  {\hspace{12em}\zihao{4}\sjtu@label@originalDate\hspace{1.5em}}
+  \clearpage
   \cleardoublepage
 }
 
@@ -385,15 +391,19 @@
   \cleardoublepage
   \thispagestyle{empty}
   \begin{center}
-  	{\bf\zihao{3} \sjtu@value@school}\\
-  	{\bf\zihao{3} \sjtu@label@authorization}
+  	{\heiti\zihao{-2} \sjtu@value@school}\\
+  	\vskip 10pt
+  	{\heiti\zihao{-2} \sjtu@label@authorization}
   \end{center}
-  \vskip 10pt
-  {\par\zihao{-4}\sjtu@label@authorizationcontent\par}
-  \vskip 60pt
-  \sjtu@label@authorsign\hrulefill\hspace{3em}\sjtu@label@Supervisorsign\hrulefill
-  \vskip 15pt
-  \sjtu@label@originalDate\hfill\hspace{3em}\sjtu@label@originalDate
+  \vskip 12pt
+  \linespread{1.8}
+  {\par\zihao{4}\sjtu@label@authorizationcontent\par}
+  \linespread{1.3}
+  \vskip 150pt
+  {\hspace{2.5em}\zihao{4}\sjtu@label@authorsign\hspace{7.5em}\zihao{4}\sjtu@label@Supervisorsign}
+  \vskip 30pt
+  {\zihao{4}\sjtu@label@authorizationDate\hspace{4em}\zihao{4}\sjtu@label@authorizationDate}
+  \clearpage
   \cleardoublepage
 }
 
