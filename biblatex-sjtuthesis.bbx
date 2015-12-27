@@ -40,7 +40,8 @@
 }
 
 \DeclareFieldFormat[book]{title}{\mkbibemph{#1}}
-\DeclareFieldFormat[inproceedings,article,thesis]{title}{#1}
+\DeclareFieldFormat[inproceedings,article,thesis,online]{title}{#1}
+\DeclareFieldFormat*{url}{\url{#1}}
 
 \DeclareNameFormat{default}{%
 	\usebibmacro{name:first-last}{#1}{#4}{#5}{#7}
@@ -79,6 +80,14 @@
 	\newblock\printtext{\mkbibbrackets{\printfield{type}}\setunit{\bbx@cecomma}}
 	\newblock\printlist{institution}\setunit{\bbx@cecomma}
 	\newblock\printfield{year}\printtext{年}\usebibmacro{finentry}
+}
+
+\DeclareBibliographyDriver{online}{
+	\printnames{author}\setunit{\bbx@cecomma}
+	\newblock\printfield{title}\setunit{\bbx@cespace}
+	\newblock\printtext{[Online]}\setunit{\bbx@ceperiod}
+	\newblock\printtext{Available}\setunit{\bbx@cecolon}
+	\newblock\printfield{url}\usebibmacro{finentry}
 }
 
 %排序规则
