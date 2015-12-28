@@ -41,6 +41,7 @@
 
 \DeclareFieldFormat[book]{title}{\mkbibemph{#1}}
 \DeclareFieldFormat[inproceedings,article,thesis,online]{title}{#1}
+\DeclareFieldFormat[inproceedings]{volume}{#1}
 \DeclareFieldFormat*{url}{\url{#1}}
 
 \DeclareNameFormat{default}{%
@@ -61,6 +62,7 @@
 	\newblock\printtext{in}\nopunct\setunit{\bbx@cespace}
 	\newblock\printfield{booktitle}\setunit{\bbx@cecomma}
 	\newblock\printfield{month}\printtext{\bbx@cespace}\printfield{year}\setunit{\bbx@cecomma}
+	\newblock\iffieldundef{volume}{}{\printtext{vol\bbx@ceperiod\printfield{volume}}}\setunit*{\bbx@cecomma}
 	\newblock\printfield{pages}\usebibmacro{finentry}
 }
 
