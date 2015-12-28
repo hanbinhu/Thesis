@@ -117,18 +117,18 @@ i,j作为虚数单位时，也应该使用“直立体”为了明显，还加�
 \end{figure}
 
 % 这里还有插入eps图像和pdf图像的例子，如图\ref{fig:epspdf:a}和图\ref{fig:epspdf:b}。这里将EPS和PDF图片作为子图插入，每个子图有自己的小标题。并列子图的功能是使用subfigure宏包提供的。
-% 
-% \begin{figure}
-%   \centering
-%   \subfigure[EPS Figure]{
-%     \label{fig:epspdf:a} %% label for first subfigure
-%     \includegraphics[width=0.3\textwidth]{chap2/sjtulogo.eps}}
-%   \hspace{1in}
-%   \subfigure[PDF Figure]{
-%     \label{fig:epspdf:b} %% label for second subfigure
-%     \includegraphics[width=0.3\textwidth]{chap2/sjtulogo.pdf}}
-%   \bicaption[fig:pdfeps]{插入eps图像和pdf图像}{插入eps和pdf的例子}{Fig}{An EPS and PDF demo}
-% \end{figure}
+
+\begin{figure}
+  \centering
+  \subfigure[EPS Figure]{
+    \label{fig:epspdf:a} %% label for first subfigure
+    \includegraphics[width=0.3\textwidth]{chap2/sjtulogo.eps}}
+  \hspace{1in}
+  \subfigure[PDF Figure]{
+    \label{fig:epspdf:b} %% label for second subfigure
+    \includegraphics[width=0.3\textwidth]{chap2/sjtulogo.pdf}}
+  \bicaption[fig:pdfeps]{插入eps图像和pdf图像}{插入eps和pdf的例子}{Fig}{An EPS and PDF demo}
+\end{figure}
 
 更多关于 \LaTeX 插图的例子可以参考\href{http://www.cs.duke.edu/junhu/Graphics3.pdf}{《\LaTeX 插图指南》}。
 
@@ -243,11 +243,11 @@ i,j作为虚数单位时，也应该使用“直立体”为了明显，还加�
 在本模板中，我们使用caspervector\footnote{\url{http://www.ctan.org/pkg/biblatex-caspervector}}参考文献样式，这是一种非常接近GB风格，但在美学细节上更优秀的风格。
 
 正文中引用参考文献时，用\verb+\supercite{key1,key2,key3...}+可以产生“上标引用的参考文献”，
-如\parencite{Meta_CN}。
+如。
 使用\verb+\parencite{key1,key2,key3...}+则可以产生水平引用的参考文献，例如。
-请看下面的例子，将会穿插使用水平的和上标的参考文献：关于书的\parencite{Meta_CN,JohnD}，关于期刊的\parencite{chen2007ewi}，
-会议论文\parencite{DPMG,DPMG1,DPMG2,DPMG3,DPMG4,DPMG5,DPMG6,DPMG7}，
-硕士学位论文\parencite{zhubajie}，博士学位论文，电子文献，用户手册。
+请看下面的例子，将会穿插使用水平的和上标的参考文献：关于书的，关于期刊的，
+会议论文，
+硕士学位论文，博士学位论文，电子文献，用户手册。
 
 总结一些注意事项：
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
