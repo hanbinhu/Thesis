@@ -451,7 +451,7 @@ g_{m} v_{tail} = 0 \Rightarrow v_{tail} = 0
 	\bicaption[fig:TS_VG_Curve]{有虚拟地的两级运放频率响应曲线比较}{有虚拟地的两级运放频率响应曲线比较}{Fig}{Frequency response comparison for two-stage opamp with virtual ground}
 \end{figure}
 
-为了考察如不做元件预处理的运算放大器简化结果，这里给出了没有预先使$tail$节点接地的简化电路结构，如图\ref{TS_VG_simp}所示，其相应的频率响应比较结果在图\ref{fig:TS_VG_Curve}中给出。
+为了考察如不做元件预处理的运算放大器简化结果，这里给出了没有预先使$tail$节点接地的简化电路结构，如图\ref{fig:TS_VG_simp}所示，其相应的频率响应比较结果在图\ref{fig:TS_VG_Curve}中给出。
 可以看到如果没有实现做元件的预处理，会得到含有虚拟地的电路结构。
 明显经过预处理的电路结构简化结构更令人满意且简洁。
 在将来的设计中，可以将这一功能放开给工程师选取，看是否有必要进行预处理简化。
@@ -573,12 +573,6 @@ Current Buffer的尺寸调整方法往往不是很容易。
 但是可以看到由于补偿的加入，运放的第一级增益部分挂上了$r_{ds12}$这个阻抗，减小了电路增益。
 并且由于$c_{gs9}$的出现，使第一级形成的极点位置更低。
 补偿部分根据\parencite{CB1,CB2,Allen-Analog}的分析，可以看到本算法抓出了不同文献中提到的需要考虑的电路元件，证明了该算法在不同电路拓扑结构情况下的有效性。
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.8\textwidth]{chap2/res/CB.eps}
-	\bicaption[fig:CB]{Current Buffer补偿的两级运算放大器电路图}{Current Buffer补偿的两级运算放大器电路图}{Fig}{Two-stage opamp schematic with current buffer compensation}
-\end{figure}
 
 \begin{figure}[!htp]
 	\centering
