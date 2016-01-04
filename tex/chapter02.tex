@@ -260,14 +260,112 @@ g_{m} v_{tail} = 0 \Rightarrow v_{tail} = 0
 \subsection{元件重要性选取}
 \label{subsec:simp:alg:significance}
 
+元件重要性是在符号简化工程中十分重要的一个指标。
+重要性表征了电路总体性能与某个单一元件的值的密切程度。
+如果一个元件的重要性程度高，那么代表电路性能对这个元件的值十分敏感，故在最终的降阶模型电路图中应有所保留。
+针对一个运放来说，只有其运放的差分增益以及相位裕度是我们最为关心的两个指标。
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.7\textwidth]{chap2/significance.eps}
+	\bicaption[fig:significance]{元件变化对运放增益和相位裕度的影响}{元件变化对运放增益和相位裕度的影响}{Fig}{The impact of element value on gain and phase margin}
+\end{figure}
+
+可以想象，如图\ref{fig:significance}，当运放电路元件发生变化的过程中，其相应的差分增益与单位增益频率处的相位会发生变化。
+同样，如果一个元件对运放的差分增益贡献较大，那么在把这个元件从电路中以置为无穷大或者零的方式，将其从电路中删去后，电路的频率响应会发生剧烈变动。
+也就是说，一个运放的重要性基本等同于元件变化时的电路性能变化的程度。
+这一点，正是作为我们选取重要性指标的关键所在。
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{chap2/SignProcess.eps}
+	\bicaption[fig:SignProcess]{元件重要性计算流程}{元件重要性计算流程}{Fig}{Element significance calculation process}
+\end{figure}
+
+总结来说，元件重要性计算的整体流程如图\ref{fig:SignProcess}所示。
+在算法运行初期，我们得到了运放在一般情况下的差分增益$A_0$以及其在单位频率$UGF$处的相位$PM_0$。
+接下来，假设我们需要对电路中的元件$S$求取重要性，那么我们首先将$S$的值置为无穷大，取得此时的运放差分增益$A|_G$以及其在单位频率$UGF$处的相位$PM|_G$，并记录相应的操作为$op1$。
+然后，将$S$的值置为零，取得此时的运放差分增益$A|_{\overline G}$以及其在单位频率$UGF$处的相位$PM|_{\overline G}$，并记录相应的操作为$op2$。
+在获得了相应的变化之后，我们可以分别计算得到电路在两种情况下分别的电路AC性能的变动指标。
+这里我们采用了平方和开根的方式对增益和相位两个指标进行融合。
+同时，为了保证两种不同的物理量之间相互能够比较，采用了相对误差的计算方式，如下两式所示：
+
+\begin{equation}
+\varepsilon {|_G} = \sqrt {{{\left( {\frac{{A{|_G} - {A_0}}}
+				{{{A_0}}}} \right)}^2} + {{\left( {\frac{{PM{|_G} - P{M_0}}}
+				{{P{M_0}}}} \right)}^2}}
+\end{equation}
+
+\begin{equation}
+\varepsilon {|_{\overline G }} = \sqrt {{{\left( {\frac{{A{|_{\overline G }} - {A_0}}}
+				{{{A_0}}}} \right)}^2} + {{\left( {\frac{{PM{|_{\overline G }} - P{M_0}}}
+				{{P{M_0}}}} \right)}^2}}
+\end{equation}
+
+在获得将电路元件置为无穷大和零情况下相应的电路性能的变化$\varepsilon {|_G}$和$\varepsilon {|_{\overline G }}$之后，我们选取其中较小的一个作为之后用于排序的重要性指标$\varepsilon$，同时记得记录对应的删去操作$op$，即如下式：
+
+\begin{equation}
+\varepsilon  = \min \left\{ {{\varepsilon {|_G}},{\varepsilon {|_{\overline G }}}} \right\}
+\end{equation}
+
+之所以选择较小的$\varepsilon$作为该元件的重要性，主要是因为我们希望在删去电路元件的过程中，应该尽可能小地改变电路的性能指标。
+即所选择的$\varepsilon$所对应的删去方式，更适合作为该元件的删去方式，因为删去该元件之后，对电路产生的影响较小。
+如有一个电阻，如果其值非常小，可以近似视为短路时，那么明显$\varepsilon {|_G}$会小于$\varepsilon {|_{\overline G }}$，这时应将该电路短路，即选择$\varepsilon {|_G}$作为其重要性，并进行接下来的操作。
+
+可以看到重要性计算过程中需要求取在元件值为零和无穷大时分别的AC增益和$UGF$处的相位，故需要对两种符号情况的两个频率点分别计算电路的传输函数。
+这总共需要对GPDD进行4次遍历过程，才可以完成，如忽略常数系数，则重要性计算的时间复杂度约为$\left|GPDD\right|$。
+
 \subsection{简化特殊情况分析}
 \label{subsec:simp:alg:special}
 
-\subsubsection{重要性计算过程中处理}
+在简化过程中，存在两种可能的简化特殊情况，需要区别处理。
+出现这些情况的主要原因是对应的电路中拓扑结构不合理造成的。
+为了使算法能尽可能稳定运行，在不影响电路性能的情况，尽可能多地删去较多的元件。
+应对这些情况做出合适处理，以使算法尽可能稳定。
+
+\subsubsection{元件重要性计算过程中处理}
 \label{subsubsec:simp:alg:special:sign}
 
-\subsubsection{图约减过程中处理}
+首先在重要性计算过程中，我们是将电路元件的值置为零或无穷大的情况下，然后计算相应的重要性。
+但是有可能出现这样的情况，比如某个电路元件承担了将信号从上一级传递到下一级的职责。
+那么我们在计算其重要性过程中，如将其值置为无穷大，那么其输出也为无穷大（在程序中显示其值为INF）；
+如将其值置为零，那么其输出与输入无关（在程序中显示其值为NAN）。
+这两种情况都是我们不期望看到的。所以应规定相应的规则，处理类似情况。我们规定如下规则，处理类似情况：
+
+\begin{enumerate}[label=\emph{\alph*})]
+	\item 如没有删去方式会导致对应的重要性$\varepsilon$为INF或者NAN，那么按照\ref{subsec:simp:alg:significance}中的重要性计算方式计算。
+	\item 如有仅一种删去方式导致对应的重要性$\varepsilon$为INF或者NAN，那么无论另一种删去方式的重要性$\varepsilon$大小，选择另一种删去方式，并记录重要性。
+	\item 如果两种删去方式都会导致对应的重要性$\varepsilon$为INF或者NAN，那么对该元件的操作方式记录为保留，即在后续处理中忽略该元件。
+\end{enumerate}
+
+通过这种方式，将有效地避免上述出现的情况。保证算法运行的稳定，尽可能多地删去电路元件，以得到合理的低阶电路模型。
+
+\subsubsection{最终电路图中删去元件过程处理}
 \label{subsubsec:simp:alg:special:reduce}
+
+另一种特殊情况发生在最终对电路进行电路图层面的约减过程中。因为在电路图的约减过程中，我们仍然需要监控电路的传输函数变化，来确定最终的小信号简化低阶模型的形式。
+有些电路需要多个电路元件删去后，才会出现电路传输函数的计算过程中的异常值（NAN或INF）。
+这种情况在GPDD计算中，一种常见的情况是电路出现了孤立节点。
+然而由于GPDD的构造过程，是枚举电路生成树对，如果由于简化电路，孤立的节点不会出现生成树中，那么就无法计算对应的GPDD的值。
+这种情况往往需要对元件的删去方式进行翻转，因为往往这种情况并不影响最终的传输函数结果。下面用一个例子对这种情况进行说明。
+
+\begin{exmp}
+电路中多余元件对GPDD求值的影响
+	
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.6\textwidth]{chap2/CancelCase.eps}
+	\bicaption[fig:CancelCase]{电路图约减过程中特殊情况说明}{电路图约减过程中特殊情况说明}{Fig}{Special case in simplified circuit graph reduction}
+\end{figure}
+
+可以看到图\ref{fig:CancelCase}中展示了一个多余的电路元件电阻$R$，现在考虑将电阻R删去。
+可以看到不论如何删去R都不会影响到电路的传输函数的相应，可是在GPDD中，只有下一种情况是可以继续计算的，因为红色的节点仍然能包含最终的生成树中；
+而另一种情况则不包含。这种情况下，GPDD求值存在困难。故如当我们发现类似图\ref{fig:CancelCase}中的情况发生时，及时地改变电路元件的删去方式，那么可以得到可计算的GPDD结构。
+
+\end{exmp}
+
+可以看到只要翻转删去方式，往往可以避免此类的情况的出现；如翻转了仍无效果，可如上一小节\ref{subsubsec:simp:alg:special:sign}中所介绍的一样，保留该元件。
+究其深层次的原因，主要是因为GPDD并不完全没有对消项造成的，仍存在类似公因子对消项，这一点会在附录\ref{app:cancel}中给出详细的说明。
 
 \section{降阶模型生成算法测试结果与分析}
 \label{sec:simp:res}
@@ -293,7 +391,9 @@ g_{m} v_{tail} = 0 \Rightarrow v_{tail} = 0
 \section{本章小结}
 \label{sec:simp:con}
 
-这里采用的关键技术为符号化拓扑的简化的方法。这一方法相对于传统的一些符号化简化方法，有以下几方面优势：
+本章对本文的关键技术符号降阶模型的自动生成进行了详细介绍，并分析了加入各个流程原因以及需要考虑的特殊情况。
+通过广泛大量的测试，可以看到本文提出的符号化降阶算法有效地降低了电路模型的阶数，并且得到十分合理、易于电路工程师进行理解的简化电路小信号模型。
+这里采用的关键技术为符号化拓扑的简化的方法。这一方法相对于传统的一些符号化简化方法，总结下来，有以下几方面优势：
 
 \begin{enumerate}[label=\emph{\alph*})]
 	\item 可以直接给出简化后的电路拓扑结构，易于模拟电路工程师进行分析。
@@ -301,193 +401,3 @@ g_{m} v_{tail} = 0 \Rightarrow v_{tail} = 0
 	\item 得到的简化结果直接对应于原始电路中的电路元件，有助于做尺寸调整，避免了传统方法中简化结果无法对应会电路的问题。
 	\item 区别于传统矩阵降阶方法，是一种启发式的符号化模型降阶方法。
 \end{enumerate}
-
-\section{数学排版}
-\label{sec:matheq}
-
-\subsection{公式排版}
-\label{sec:eqformat}
-
-这里有举一个长公式排版的例子，来自\href{http://www.tex.ac.uk/tex-archive/info/math/voss/mathmode/Mathmode.pdf}{《Math mode》}：
-
-\begin {multline}
-  \frac {1}{2}\Delta (f_{ij}f^{ij})=
-  2\left (\sum _{i<j}\chi _{ij}(\sigma _{i}-
-    \sigma _{j}) ^{2}+ f^{ij}\nabla _{j}\nabla _{i}(\Delta f)+\right .\\
-  \left .+\nabla _{k}f_{ij}\nabla ^{k}f^{ij}+
-    f^{ij}f^{k}\left [2\nabla _{i}R_{jk}-
-      \nabla _{k}R_{ij}\right ]\vphantom {\sum _{i<j}}\right )
-\end{multline}
-
-\subsubsection{一个四级标题}
-\label{sec:depth4}
-
-这是全文唯一的一个四级标题。在这部分中将演示了mathtools宏包中可伸长符号（箭头、等号的例子）的例子。
-
-\begin{displaymath}
-    A \xleftarrow[n=0]{} B \xrightarrow[LongLongLongLong]{n>0} C 
-\end{displaymath}
-
-\begin{eqnarray}
-  f(x) & \xleftrightarrow[]{A=B}  & B \\
-  & \xleftharpoondown[below]{above} & B \nonumber \\
-  & \xLeftrightarrow[below]{above} & B
-\end{eqnarray}
-
-又如：
-
-\begin{align}
-  \label{eq:none}
-  & I(X_3;X_4)-I(X_3;X_4\mid{}X_1)-I(X_3;X_4\mid{}X_2) \nonumber \\
-  = & [I(X_3;X_4)-I(X_3;X_4\mid{}X_1)]-I(X_3;X_4\mid{}\tilde{X}_2) \\
-  = & I(X_1;X_3;X_4)-I(X_3;X_4\mid{}\tilde{X}_2)
-\end{align}
-
-\subsection{定理环境}
-
-模板中定义了丰富的定理环境
-algo(算法)，thm(定理)，lem(引理)，prop(命题)，cor(推论)，defn(定义)，conj(猜想)，exmp(例)，rem(注)，case(情形)，
-bthm(断言定理)，blem(断言引理)，bprop(断言命题)，bcor(断言推论)。
-amsmath还提供了一个proof(证明)的环境。
-这里举一个“定理”和“证明”的例子。
-\begin{thm}[留数定理]
-\label{thm:res}
-  假设$U$是复平面上的一个单连通开子集，$a_1,\ldots,a_n$是复平面上有限个点，$f$是定义在$U\backslash \{a_1,\ldots,a_n\}$上的全纯函数，
-  如果$\gamma$是一条把$a_1,\ldots,a_n$包围起来的可求长曲线，但不经过任何一个$a_k$，并且其起点与终点重合，那么：
-
-  \begin{equation}
-    \label{eq:res}
-    \ointop_{\gamma}f(z)\,\mathrm{d}z = 2\uppi\mathbf{i}\sum^n_{k=1}\mathrm{I}(\gamma,a_k)\mathrm{Res}(f,a_k)
-  \end{equation}
-
-  如果$\gamma$是若尔当曲线，那么$\mathrm{I}(\gamma, a_k)=1$，因此：
-
-  \begin{equation}
-    \label{eq:resthm}
-    \ointop_{\gamma}f(z)\,\mathrm{d}z = 2\uppi\mathbf{i}\sum^n_{k=1}\mathrm{Res}(f,a_k)
-  \end{equation}
-
-      % \oint_\gamma f(z)\, dz = 2\pi i \sum_{k=1}^n \mathrm{Res}(f, a_k ). 
-
-  在这里，$\mathrm{Res}(f, a_k)$表示$f$在点$a_k$的留数，$\mathrm{I}(\gamma,a_k)$表示$\gamma$关于点$a_k$的卷绕数。
-  卷绕数是一个整数，它描述了曲线$\gamma$绕过点$a_k$的次数。如果$\gamma$依逆时针方向绕着$a_k$移动，卷绕数就是一个正数，
-  如果$\gamma$根本不绕过$a_k$，卷绕数就是零。
-
-  定理\ref{thm:res}的证明。
-  
-  \begin{proof}
-    首先，由……
-
-    其次，……
-
-    所以……
-  \end{proof}
-\end{thm}
-
-上面的公式例子中，有一些细节希望大家注意。微分号d应该使用“直立体”也就是用mathrm包围起来。
-并且，微分号和被积函数之间应该有一段小间隔，可以插入\verb+\,+得到。
-斜体的$d$通常只作为一般变量。
-i,j作为虚数单位时，也应该使用“直立体”为了明显，还加上了粗体，例如\verb+\mathbf{i}+。斜体$i,j$通常用作表示“序号”。
-其他字母在表示常量时，也推荐使用“直立体”譬如，圆周率$\uppi$（需要upgreek宏包），自然对数的底$\mathrm{e}$。
-不过，我个人觉得斜体的$e$和$\pi$很潇洒，在不至于引起混淆的情况下，我也用这两个字母的斜体表示对应的常量。
-
-
-\section{向文档中插入图像}
-\label{sec:insertimage}
-
-\subsection{支持的图片格式}
-\label{sec:imageformat}
-
-\XeTeX 可以很方便地插入PDF、PNG、JPG格式的图片。
-
-插入PNG/JPG的例子如\ref{fig:SRR}所示。
-这两个水平并列放置的图共享一个“图标题”(table caption)，没有各自的小标题。
-
-\begin{figure}[!htp]
-  \centering
-  \includegraphics[width=0.3\textwidth]{chap2/sjtulogo.png}
-  \hspace{1cm}
-  \includegraphics[width=0.3\textwidth]{chap2/sjtulogo.jpg}
-  \bicaption[fig:SRR]{这里将出现在插图索引中}{中文题图}{Fig}{English caption}
-\end{figure}
-
-% 这里还有插入eps图像和pdf图像的例子，如图\ref{fig:epspdf:a}和图\ref{fig:epspdf:b}。这里将EPS和PDF图片作为子图插入，每个子图有自己的小标题。并列子图的功能是使用subfigure宏包提供的。
-
-\begin{figure}
-  \centering
-  \subfigure[EPS Figure]{
-    \label{fig:epspdf:a} %% label for first subfigure
-    \includegraphics[width=0.3\textwidth]{chap2/sjtulogo.eps}}
-  \hspace{1in}
-  \subfigure[PDF Figure]{
-    \label{fig:epspdf:b} %% label for second subfigure
-    \includegraphics[width=0.3\textwidth]{chap2/sjtulogo.pdf}}
-  \bicaption[fig:pdfeps]{插入eps图像和pdf图像}{插入eps和pdf的例子}{Fig}{An EPS and PDF demo}
-\end{figure}
-
-更多关于 \LaTeX 插图的例子可以参考\href{http://www.cs.duke.edu/junhu/Graphics3.pdf}{《\LaTeX 插图指南》}。
-
-\subsection{长标题的换行}
-\label{sec:longcaption}
-
-图\ref{fig:longcaptionbad}和图\ref{fig:longcaptiongood}都有比较长图标题，通过对比发现，图\ref{fig:longcaptiongood}的换行效果更好一些。
-其中使用了minipage环境来限制整个浮动体的宽度。
-
-\begin{figure}[!htp]
- \centering
- \includegraphics[width=4cm]{chap2/sjtulogo.pdf}
- \bicaption[fig:longcaptionbad]{这里将出现在插图索引}{海交通大学是我国历史最悠久的高等学府之一，是教育部直属、教育部与上海市共建的全国重点大学.}{Fig}{Where there is a will, there is a way.}
-\end{figure}
-
-\begin{figure}[!hbp]
-  \centering
-  \begin{minipage}[b]{0.6\textwidth}
-    \captionstyle{\centering}
-    \centering
-    \includegraphics[width=4cm]{chap2/sjtulogo.pdf}
-    \bicaption[fig:longcaptiongood]{这里将出现在插图索引}{海交通大学是我国历史最悠久的高等学府之一，是教育部直属、教育部与上海市共建的全国重点大学.}{Fig}{Where there is a will, there is a way.}
-  \end{minipage}     
-\end{figure}
-
-\section{用algorithm和algorithmic宏包插入算法描述}
-
-如算法\ref{algo:sum_I_want}所示。
-
-\begin{algorithm}
-\caption{求和算法}
-\label{algo:sum_I_want}
-\begin{algorithmic}
-\REQUIRE $n \geq 1$                  %输入条件
-\ENSURE $Sum = 1 + \cdots + n$       %输出
-\STATE $Sum \leftarrow 0$            %\STATE 命名演示
-\IF {$n < 1$}                        %条件语句
-\PRINT {Input Error}                 %打印语句
-\ENDIF
-\RETURN Sum
-\end{algorithmic}
-\end{algorithm}
-
-王凡教授\footnote{\url{http://cc.ee.ntu.edu.tw/~farn/}}对algorithmic做了扩展，支持\verb+STATE+、\verb+SWITCH+和\verb+CASE+等语句。
-
-\begin{algorithm}
-\caption{fibonacci}
-\label{algo: Fibonacci Sequence}
-\begin{algorithmic}
-\REQUIRE $num$
-
-\STATE $res \leftarrow 0$
-\SWITCH {$num$}
-  \CASE {$0$}
-    \STATE $res \leftarrow 1$
-  \ENDCASE
-  \CASE {$1$}
-    \STATE $res \leftarrow 1$
-  \ENDCASE
-  \DEFAULT
-    \STATE $res \leftarrow fibonacci(num-1) + fibonacci(num-2)$
-  \ENDDEFAULT
-\ENDSWITCH
-
-\RETURN $res$
-\end{algorithmic}
-\end{algorithm}
