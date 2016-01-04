@@ -370,8 +370,59 @@ g_{m} v_{tail} = 0 \Rightarrow v_{tail} = 0
 \section{降阶模型生成算法测试结果与分析}
 \label{sec:simp:res}
 
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.45\textwidth]{chap2/res/mos_model.eps}
+	\bicaption[fig:mos_model]{MOSFET器件小信号模型}{MOSFET器件小信号模型}{Fig}{Small signal model for MOSFET device}
+\end{figure}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.6\textwidth]{chap2/res/two_stage.eps}
+	\bicaption[fig:two_stage]{两级运算放大器电路图}{两级运算放大器电路图}{Fig}{Two-stage opamp schematic}
+\end{figure}
+
 \subsection{预处理简化降阶电路模型区别}
 \label{subsec:simp:res:pre}
+
+\begin{table}[!htbp]
+	\bicaption[tab:TS_PreProcess]{两级运放预处理计算各节点AC相应}{两级运放预处理计算各节点AC相应}{Table}{AC Response for each node in two-stage opamp}
+	\centering
+	\begin{tabular}{c|c|c}
+		\hline
+		  节点名    & 直流处AC增益 &   是否预先接地   \\ \hline
+		$V_{bp}$ & $20\mu$ & \checkmark \\
+		 $tail$  & $215m$  & \checkmark \\
+		  $x$    & $384m$  & \texttimes \\
+		$out_1$  &  $82$   & \texttimes \\
+		  $z$    & $5.4k$  & \texttimes \\
+		$out_2$  & $5.4k$  & \texttimes \\ \hline
+	\end{tabular}
+\end{table}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.7\textwidth]{chap2/res/TS_VG_simp.eps}
+	\bicaption[fig:TS_VG_simp]{有虚拟地的两级运放简化小信号电路}{有虚拟地的两级运放简化小信号电路}{Fig}{Simplified small-signal circuit for for two-stage opamp with virtual ground}
+\end{figure}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.7\textwidth]{chap2/res/TS_VG_Curve.eps}
+	\bicaption[fig:TS_VG_Curve]{有虚拟地的两级运放频率响应曲线比较}{有虚拟地的两级运放频率响应曲线比较}{Fig}{Frequency response comparison for two-stage opamp with virtual ground}
+\end{figure}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{chap2/res/TS_simp.eps}
+	\bicaption[fig:TS_simp]{无虚拟地的两级运放简化小信号电路}{无虚拟地的两级运放简化小信号电路}{Fig}{Simplified small-signal circuit for two-stage opamp without virtual ground}
+\end{figure}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.7\textwidth]{chap2/res/TS_Curve.eps}
+	\bicaption[fig:TS_Curve]{无虚拟地的两级运放频率响应曲线比较}{无虚拟地的两级运放频率响应曲线比较}{Fig}{Frequency response comparison for two-stage opamp without virtual ground}
+\end{figure}
 
 \subsection{多种电路结构简化结果分析}
 \label{subsec:simp:res:cir}
@@ -379,14 +430,179 @@ g_{m} v_{tail} = 0 \Rightarrow v_{tail} = 0
 \subsubsection{折叠共源共栅运算放大器拓扑简化结果}
 \label{subsubsec:simp:res:cir:fd}
 
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.6\textwidth]{chap2/res/folded_cascode.eps}
+	\bicaption[fig:folded_cascode]{折叠共源共栅运算放大器电路图}{折叠共源共栅运算放大器电路图}{Fig}{Folded-cascode opamp schematic}
+\end{figure}
+
+\begin{table}[!htbp]
+	\bicaption[tab:FC_PreProcess]{折叠共源共栅运放预处理计算各节点AC相应}{折叠共源共栅运放预处理计算各节点AC相应}{Table}{AC Response for each node in folded-cascode opamp}
+	\centering
+	\begin{tabular}{c|c|c}
+		\hline
+		   节点名     & 直流处AC增益 &   是否预先接地   \\ \hline
+		 $V_{bn}$  &   $0$   & \checkmark \\
+		$V_{bp1}$  &   $0$   & \checkmark \\
+		$V_{tail}$ & $712p$  & \checkmark \\
+		$V_{bp2}$  &  $48n$  & \checkmark \\
+		  $tail$   & $447m$  & \checkmark \\
+		 $cas_1$   &  $2.7$  & \texttimes \\
+		 $cas_1$   & $24.6$  & \texttimes \\
+		   $x$     &  $3.6$  & \texttimes \\
+		   $y$     &  $2.6$  & \texttimes \\
+		   $z$     &  $82$   & \texttimes \\
+		  $out$    & $3.0k$  & \texttimes \\ \hline
+	\end{tabular}
+\end{table}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.9\textwidth]{chap2/res/FC_simp.eps}
+	\bicaption[fig:FC_simp]{折叠共源共栅运放简化小信号电路}{折叠共源共栅运放简化小信号电路}{Fig}{Simplified small-signal circuit for folded-cascode opamp}
+\end{figure}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.7\textwidth]{chap2/res/FC_Curve.eps}
+	\bicaption[fig:FC_Curve]{折叠共源共栅运放频率响应曲线比较}{折叠共源共栅运放频率响应曲线比较}{Fig}{Frequency response comparison for folded-cascode opamp}
+\end{figure}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.4\textwidth]{chap2/res/Nullor2Res.eps}
+	\bicaption[fig:Nullor2Res]{折叠共源共栅运放降阶模型中的Nullor等效}{折叠共源共栅运放降阶模型中的Nullor等效}{Fig}{Equivalent circuit topology for nullor in simplified folded-cascode opamp}
+\end{figure}
+
 \subsubsection{多种补偿结构的两级运算放大器拓扑简化结果}
 \label{subsubsec:simp:res:cir:ts}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.7\textwidth]{chap2/res/VB.eps}
+	\bicaption[fig:VB]{Voltage Buffer补偿的两级运算放大器电路图}{Voltage Buffer补偿的两级运算放大器电路图}{Fig}{Two-stage opamp schematic with voltage buffer compensation}
+\end{figure}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=\textwidth]{chap2/res/VB_simp.eps}
+	\bicaption[fig:VB_simp]{Voltage Buffer补偿的运放简化小信号电路}{Voltage Buffer补偿的运放简化小信号电路}{Fig}{Simplified small-signal circuit for two-stage opamp with voltage buffer compensation}
+\end{figure}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.7\textwidth]{chap2/res/VB_Curve.eps}
+	\bicaption[fig:VB_Curve]{Voltage Buffer补偿的运放频率响应曲线比较}{Voltage Buffer补偿的运放频率响应曲线比较}{Fig}{Frequency response comparison for two-stage opamp with voltage buffer compensation}
+\end{figure}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{chap2/res/CB.eps}
+	\bicaption[fig:CB]{Current Buffer补偿的两级运算放大器电路图}{Current Buffer补偿的两级运算放大器电路图}{Fig}{Two-stage opamp schematic with current buffer compensation}
+\end{figure}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.9\textwidth]{chap2/res/CB_simp.eps}
+	\bicaption[fig:CB_simp]{Current Buffer补偿的运放简化小信号电路}{Current Buffer补偿的运放简化小信号电路}{Fig}{Simplified small-signal circuit for two-stage opamp with current buffer compensation}
+\end{figure}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.7\textwidth]{chap2/res/CB_Curve.eps}
+	\bicaption[fig:CB_Curve]{Current Buffer补偿的运放频率响应曲线比较}{Current Buffer补偿的运放频率响应曲线比较}{Fig}{Frequency response comparison for two-stage opamp with current buffer compensation}
+\end{figure}
 
 \subsection{尺寸调整下的算法稳定性分析}
 \label{subsec:simp:res:size}
 
+\begin{table}[!htbp]
+	\bicaption[tab:TS_CommonSize]{两级运放尺寸共同参数}{两级运放尺寸共同参数}{Table}{Common parameter sizing for two-stage opamps}
+	\centering
+	\begin{tabular}{c|c}
+		\hline
+		      参数       &     值      \\ \hline
+		电流偏置电压$V_{bp}$ &  $1.12 V$  \\
+		  负载电容$C_L$    &   $2pF$    \\
+		 所有MOS管的长$L$   & $0.5\mu m$ \\
+		  供电电压$Vdd$    &   $1.8V$   \\ \hline
+	\end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+	\bicaption[tab:TS_Size]{两级运放的不同尺寸方案}{两级运放的不同尺寸方案}{Table}{Sizing strategy for two-stage opamps}
+	\centering
+	\begin{tabular}{c|c|c|c}
+		\hline
+		        参数          &     0号尺寸方案     &     1号尺寸方案     &    2号尺寸方案     \\ \hline
+		      输入偏置电压        &    $0.9 V$     &    $0.7 V$     &    $1.1 V$    \\
+		$W\left(M_1\right)$ &   $20 \mu m$   &   $40 \mu m$   &  $25 \mu m$   \\
+		$W\left(M_2\right)$ &   $20 \mu m$   &   $40 \mu m$   &  $25 \mu m$   \\
+		$W\left(M_3\right)$ &   $5 \mu m$    &  $1.5 \mu m$   &   $1 \mu m$   \\
+		$W\left(M_4\right)$ &   $5 \mu m$    &  $1.5 \mu m$   &   $1 \mu m$   \\
+		$W\left(M_5\right)$ &   $48 \mu m$   &   $12 \mu m$   &  $10 \mu m$   \\
+		$W\left(M_6\right)$ &   $30 \mu m$   &  $33.5 \mu m$  &  $32 \mu m$   \\
+		$W\left(M_7\right)$ &  $144 \mu m$   &  $144 \mu m$   &  $144 \mu m$  \\
+		       $R_z$        & $1.75 k\Omega$ & $1.75 k\Omega$ & $1.5 k\Omega$ \\
+		       $C_c$        &    $350 fF$    &    $350 fF$    &   $250 fF$    \\ \hline
+	\end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+	\bicaption[tab:TS_Significance]{不同尺寸下的两级运放元件重要性排序}{不同尺寸下的两级运放元件重要性排序（编号靠前重要性越大。）}{Table}{Symbol order of opamp under different sizings (Symbol with smaller No. is more significant.)}
+	\centering
+	\begin{tabular}{c|c|c|c}
+		\hline
+		 编号  &  0号尺寸方案   &  1号尺寸方案   &  2号尺寸方案   \\ \hline
+		$1$  &    $X$    &    $X$    &    $X$    \\
+		$2$  &  $C_{c}$  & $g_{m6}$  & $g_{m6}$  \\
+		$3$  & $g_{m6}$  &  $C_{c}$  &  $C_{c}$  \\
+		$4$  &  $C_{L}$  &  $C_{L}$  &  $C_{L}$  \\
+		$5$  &  $R_{z}$  &  $R_{z}$  &  $R_{z}$  \\
+		$6$  & $g_{m1}$  & $r_{ds7}$ & $g_{m1}$  \\
+		$7$  &  $E_{1}$  & $c_{gs6}$ &  $E_{1}$  \\
+		$8$  & $g_{m4}$  & $g_{m1}$  & $g_{m4}$  \\
+		$9$  &  $E_{2}$  &  $E_{1}$  &  $E_{2}$  \\
+		$10$ & $g_{m3}$  & $g_{m4}$  & $g_{m3}$  \\
+		$11$ & $g_{m2}$  &  $E_{2}$  & $r_{ds7}$ \\
+		$12$ & $r_{ds1}$ & $g_{m3}$  & $g_{m2}$  \\
+		$13$ & $r_{ds7}$ & $g_{m2}$  & $r_{ds1}$ \\
+		$14$ & $c_{gs6}$ & $r_{ds1}$ & $c_{gs6}$ \\
+		$15$ & $r_{ds6}$ & $r_{ds3}$ & $r_{ds3}$ \\
+		$16$ & $r_{ds3}$ & $r_{ds6}$ & $r_{ds6}$ \\
+		$17$ & $c_{db2}$ & $c_{db1}$ & $c_{db2}$ \\
+		$18$ & $c_{db1}$ & $c_{db7}$ & $c_{db1}$ \\ \hline
+	\end{tabular}
+\end{table}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{chap2/res/TS_07_simp.eps}
+	\bicaption[fig:TS_07_simp]{1号尺寸调整方案的的运放简化小信号电路}{1号尺寸调整方案的的运放简化小信号电路}{Fig}{Simplified small-signal circuit for two-stage opamp with 1st sizing method}
+\end{figure}
+
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.8\textwidth]{chap2/res/TS_11_simp.eps}
+	\bicaption[fig:TS_11_simp]{2号尺寸调整方案的的运放简化小信号电路}{2号尺寸调整方案的的运放简化小信号电路}{Fig}{Simplified small-signal circuit for two-stage opamp with 2nd sizing method}
+\end{figure}
+
 \subsection{简化符号化模型阶数比较}
 \label{subsec:simp:res:order}
+
+\begin{table}[!htbp]
+	\bicaption[tab:MOR]{电路符号化模型阶数比较}{电路符号化模型阶数比较}{Table}{Model order comparison between original and simplified circuits}
+	\centering
+	\begin{tabular}{c|c|c|c|c}
+		\hline
+		\multirow{2}{*}{电路类型} & \multicolumn{2}{c|}{原始电路} & \multicolumn{2}{c}{简化电路} \\ \cline{2-5}
+		                      & 极点个数 &        零点个数        & 极点个数 &       零点个数        \\ \hline
+		      折叠共源共栅运放        &  9   &         8          &  3   &         1         \\
+		      调零补偿两级运放        &  6   &         6          &  4   &         2         \\
+		Voltage Buffer补偿两级运放  &  6   &         6          &  3   &         2         \\
+		Current Buffer补偿两级运放  &  7   &         7          &  4   &         2         \\ \hline
+	\end{tabular}
+\end{table}
 
 \section{本章小结}
 \label{sec:simp:con}
