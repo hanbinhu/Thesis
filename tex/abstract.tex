@@ -5,11 +5,20 @@
 
 \begin{abstract}
 
-\keywords{\large 低阶模型生成 \quad 拓扑简化 \quad 双图决策树}
+如今，模拟集成电路设计仍然在很大程度上依赖于手工分析，这严重阻碍了SoC的整体设计进程。作为模拟集成电路设计中不可或缺的一环，可靠的宏模型缺乏系统化自动化的设计流程。本文中，我们通过找出电路拓扑结构和GPDD符号化方法之间的联系，并提出拓扑简化的想法，开发了一套行之有效的自动化低阶模型生成算法。这套算法生成的简化符号化模型与原始电路无论在性能上，还是拓扑结构上都有很好的匹配。算法的有效性和鲁棒性得到了不同电路结构、不同电路元件尺寸的广泛验证。
+
+我们将提出的模型生成方法应用至两方面。其一是通过在简化电路模型施加电流限制，来实现自动化构造大信号分析中用到的时域模型。另一个应用是使用拓扑简化证明GPDD多端口构造的适应性条件，并将符号化多端口构造方法下的敏感度分析用于分析电路的共模抑制比和电源抑制比。本文给出了相关的测试结构和算法性能结果。
+
+\keywords{\large 低阶模型生成 \quad 拓扑简化 \quad 双图决策树 \quad 时域模型 \quad 共模抑制比 \quad 电源抑制比 \quad 符号化分析}
 \end{abstract}
 
 \begin{englishabstract}
 
-\englishkeywords{\large Low-order model generation, topological simplification, Graph-Pair Decision Diagram (GPDD)}
+Nowadays, analog integrated circuit (AIC) design still depends heavily on manual analysis, which greatly impedes the entire SoC design process. As one indispensable part of AIC design, reliable macromodel for analysis lacks systematic and automatic design procedure. In this thesis, by finding out the relation between circuit topology and GPDD symbolic method, and proposing the idea of topological simplification, we have developed an efficient symbolic algorithm for automatic low-order model generation matching the original circuits in performance and topology to a great extent. The validity and robustness of proposed method have been verified by various circuit topologies and sizings extensively.
+
+We have applied the proposed model generation method to two scenarios. The first problem is to automatically construct the time-domain model for large-signal analysis, by exerting current limiting techniques on simplified circuit model. The other one is to prove GPDD multi-port construction condition with topological simplification, and to analyze common mode rejection ratio (CMRR) and power supply rejection ratio (PSRR) with symbolic sensitivity analysis under multi-port construction. In the thesis, relevant test results and algorithm performance are provided.
+
+
+\englishkeywords{\large Low-order Model Generation, Topological Simplification, Graph-Pair Decision Diagram (GPDD), Time-Domain Model, Common Mode Rejection Ratio (CMRR), Power Supply Rejection Ratio (PSRR), Symbolic Analysis}
 \end{englishabstract}
 
