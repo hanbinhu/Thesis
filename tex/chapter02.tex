@@ -1,24 +1,16 @@
-%# -*- coding: utf-8-unix -*-
-%%==================================================
-%% chapter02.tex for SJTU Master Thesis
-%% Encoding: UTF-8
-%%==================================================
-
-\chapter{电路拓扑符号化自动降阶模型生成方法}
-\label{chap:simp}
+\chapter{基于GPDD的电路简化原理}
+\label{chap:gpddtheory}
 
 上一章介绍了电路模型对电路设计的重要性，可见电路低阶模型本身的提出也应有一定方法可以指导其生成。
 只有在拥有可靠的模拟集成电路低阶模型的情况下，电路设计工程师才有可能对电路做出进一步的理论分析，从而指导进一步的设计。
-本章给出了本文最关键的算法：采用拓扑简化方法得到的低阶模型自动生成算法，并给出了其相关的测试结果，佐证了算法的有效性。
-
-\section{双图决策树符号约简}
-\label{sec:simp:GPDD}
-
-\subsection{电路元件极值与元件拓扑的关系}
-\label{subsec:simp:GPDD:TopoLimit}
-
-本课题采用拓扑简化的方法实现电路模型的自动生成。
+课件电路模型的生成需要电路拓扑的支持。
 所以电路元件的拓扑结构对于分析本身有非常重要的作用。
+本章对一些GPDD理论进行了补充，来建立GPDD结构和电路拓扑之间的关系。
+并给出多端口电路的构造方法以及敏感度分析方法，以方便对多端口电路的分析及电路的优化。
+
+\section{GPDD中的二元操作}
+
+GPDD中有两种操作，分为将电路的元件值置为零，和将电路的元件值置为无穷大。
 我们发现电路的元件的极限取值可以代表新的简化的电路拓扑结构。
 这正可以成为我们对电路简化的基石。
 当我们考虑需要将一个电路中的元件删去时，即可认为是电路这个元件选取了极限的取值导致。
@@ -86,7 +78,7 @@ Nullor这种元件与传统的模拟电路学习中接入负反馈中的理想�
 我们知道VCVS的输入输出电压关系如下式所示：
 
 \begin{equation}
-	v_o = E v_i
+v_o = E v_i
 \end{equation}
 
 这里，$v_i$和$v_o$分别为VCVS的输入输出电压，$E$则为VCVS的放大倍数。
@@ -94,10 +86,9 @@ Nullor这种元件与传统的模拟电路学习中接入负反馈中的理想�
 另外由于VCVS的输入端测量电压，所以本来就限定输入的电流$i_i$为零，所以其形成了Nullor的虚短虚断的性质。
 另外当$E$的取值为零时，根据VCVS本身的关系，即可得出输出端电压为零，所以输出端两端电压一致，即此端口可用一根导线连接起来，加之本为断路连接的输入端，故VCVS可约减为表\ref{tab:symbollimit}中的结构。
 
-\subsection{双图决策树和电路拓扑的关系}
-\label{subsec:simp:GPDD:TopoGPDD}
+\section{GPDD与电路拓扑结构的对应关系}
 
-上一小节已经将电路的极限取值与电路的拓扑结构变化建立起了联系，而此时电路元件的极限求值成为了新的问题。
+上一小节已经将GPDD的二元操作与电路的拓扑结构变化建立起了联系，而此时电路元件的极限求值成为了新的问题。
 由于在整个算法过程中，需要多次计算不同拓扑结构下电路性能表现，这要求了高效的计算方法的支持。
 然而GPDD结构本身蕴含了对电路拓扑结构，可以轻松方便地在其中对不同的电路拓扑结构求值，这支持了下一节所介绍的简化算法。
 
@@ -136,29 +127,29 @@ H \left( s \right) = \frac{{{f_A}\left( A \right)G + {f_B}\left( B \right)}}{{{f
 下面通过一个例子展示电路拓扑结构变化对GPDD结构的影响，以直观了解这两者之间的关系。
 
 \begin{exmp}
-RLC电路向RC电路简化过程中GPDD结构比较
-
-图\ref{fig:RLC}中展示了一个RLC串联的简易电路，与之前给出的图\ref{fig:RC_cir}相比较，这里多出了电感元件。
-可以看到如果这个电感$L$如果取值为零，那么其导纳$Y=\left(s L\right)^{-1}$，即导纳为无穷大情况，即可得到RC电路的电路图。
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.4\textwidth]{chap2/RLC.eps}
-	\bicaption[fig:RLC]{RLC电路示意图}{RLC电路示意图}{Fig}{RLC circuit example}
-\end{figure}
-
-此RLC电路对应的GPDD结构展示在图\ref{fig:RLCvsRC}中的左侧。这张图右侧是展示的RC电路对应的GPDD结构。
-可以看到通过两侧曲线包围起来的结构是一致的，而且均与电感符号$L$的左儿子相连，这与之前的论述是相符的。
-同时可以看到，由于RC的GPDD结构蕴含在RLC的GPDD结构中，故可以直接在RLC的GPDD结构上对RC电路的GPDD进行求值。
-这表示了GPDD拥有在同一个BDD数据结构中求解多种不同电路拓扑的能力，这大大方便了符号简化电路自动生成算法的设计。
-这种能在同一个符号化结构中表达不同拓扑结构电路的能力是别的符号化方法不具备的，也是GPDD相比其他的符号化方法一大优势所在。
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.7\textwidth]{chap2/RLCvsRC.eps}
-	\bicaption[fig:RLCvsRC]{符号极限取值情况下GPDD结构示例}{符号极限取值情况下GPDD结构示例}{Fig}{GPDD structure example under limit value}
-\end{figure}
-
+	RLC电路向RC电路简化过程中GPDD结构比较
+	
+	图\ref{fig:RLC}中展示了一个RLC串联的简易电路，与之前给出的图\ref{fig:RC_cir}相比较，这里多出了电感元件。
+	可以看到如果这个电感$L$如果取值为零，那么其导纳$Y=\left(s L\right)^{-1}$，即导纳为无穷大情况，即可得到RC电路的电路图。
+	
+	\begin{figure}[!htp]
+		\centering
+		\includegraphics[width=0.4\textwidth]{chap2/RLC.eps}
+		\bicaption[fig:RLC]{RLC电路示意图}{RLC电路示意图}{Fig}{RLC circuit example}
+	\end{figure}
+	
+	此RLC电路对应的GPDD结构展示在图\ref{fig:RLCvsRC}中的左侧。这张图右侧是展示的RC电路对应的GPDD结构。
+	可以看到通过两侧曲线包围起来的结构是一致的，而且均与电感符号$L$的左儿子相连，这与之前的论述是相符的。
+	同时可以看到，由于RC的GPDD结构蕴含在RLC的GPDD结构中，故可以直接在RLC的GPDD结构上对RC电路的GPDD进行求值。
+	这表示了GPDD拥有在同一个BDD数据结构中求解多种不同电路拓扑的能力，这大大方便了符号简化电路自动生成算法的设计。
+	这种能在同一个符号化结构中表达不同拓扑结构电路的能力是别的符号化方法不具备的，也是GPDD相比其他的符号化方法一大优势所在。
+	
+	\begin{figure}[!htp]
+		\centering
+		\includegraphics[width=0.7\textwidth]{chap2/RLCvsRC.eps}
+		\bicaption[fig:RLCvsRC]{符号极限取值情况下GPDD结构示例}{符号极限取值情况下GPDD结构示例}{Fig}{GPDD structure example under limit value}
+	\end{figure}
+	
 \end{exmp}
 
 GPDD对降阶模型的求解的优势在于在一次符号表达构造的情况下，可以在多次同一个结构中求得对应与不同简化模型的电路传输函数。
@@ -166,545 +157,152 @@ GPDD对降阶模型的求解的优势在于在一次符号表达构造的情况�
 故可以如将构造的时间平摊在之后的多次求值上，仍然得到了许多计算上的便利。
 同时，如采用传统的数值化求解器，需要对电路矩阵做行列合并等操作，操作复杂。
 
-\section{符号化降阶模型生成算法与流程}
-\label{sec:simp:alg}
+\section{多端口构造原理}
+\label{sec:mp}
 
-在建立电路拓扑与元件取值之间的关系，并使用GPDD这个便利的工具可方便求取电路拓扑变化情况下的电路性能的条件下，本节对符号化降阶模型生成算法进行全面的介绍。
-首先，将介绍算法的总体流程，并逐一介绍其中每个流程具体细节，并给出简化过程中一些特殊情况的处理。
-本文讨论中，我们主要针对运算放大器的设计进行讨论，故我们接下来的讨论将均针对运算放大器设计。
-
-\subsection{简化算法总体流程}
-\label{subsec:simp:alg:top}
-
-降阶模型的建立，我们将其看作一个电路拓扑元件简化的过程，总的流程可参见图\ref{fig:SimpProcedure}的流程示意。
+传统的多端口GPDD构造方法会构造一个多根的GPDD结构，并在每个根中生成对应的图对，用于接下来的展开过程\parencite{GShi-GPDD-2013}。
+本文则证明了当电路满足一定条件情况下，电路的GPDD构造可以使用一个单根的结构来替代，而不需要多根的展开过程。
+这么做的好处主要是可以复用原有的GPDD展开代码，避免了引入新的程序错误，加快了开发效率，减少花费在程序实现上的工作量。
 
 \begin{figure}[!htp]
 	\centering
-	\includegraphics[width=0.5\textwidth]{chap2/SimpProcedure.eps}
-	\bicaption[fig:SimpProcedure]{降阶模型自动生成整体流程}{降阶模型自动生成整体流程}{Fig}{Entire procedure for low-order model generation}
+	\includegraphics[width=0.8\textwidth]{chap4/MultiPort.eps}
+	\bicaption[fig:mp]{多端口电路示意}{多端口电路示意}{Fig}{Multi-Port circuit example}
 \end{figure}
 
-该流程图中有两处以红色斜体标出将在接下来的两个小节\ref{subsec:simp:alg:pre}和\ref{subsec:simp:alg:significance}中详细介绍。
-这里先针对其余的部分给出说明。
+假设我们考虑如图\ref{fig:mp}左侧所示的电路结构。
+这里电路总共有两个输入端口，而且两个输入端口共享同一个电路输出端口。
+将这样的电路结构画成如图\ref{fig:mp}右侧的图，可以看到在输出端口有两条并联的VC边。
+由于GPDD算法是对电路中生成树对的枚举过程，所以如果两条VC同时出现在最终的生成树对中，则会形成环路。
+所以如图\ref{fig:mpgpdd}，必然不会出现两个输入对以实线边相连的情况。
 
-在拿到一个模拟运放电路后，首先通过数值化仿真器（如：HSPICE）利用DC求解对电路进行求解，以获得电路中所有非线性元件（如：MOSFET）的小信号参数。
-接下来，对于完整电路进行AC分析，求得相应的运放增益$A_0$和单位增益频率处相位$PM_0$（即相位裕度处），这两个值将在接下来的元件重要性求值运用到。
-对于电路元件进行预处理，做一定粗糙的简化工作，这一步对于生成的最后的简化小信号模型的易于理解性方面有关键的作用，将在\ref{subsec:simp:alg:pre}中具体介绍。
-根据初步得到的小信号模型电路，进行GPDD符号化结构的构造，以方便下一步的元件重要性计算。
+\begin{figure}[!htp]
+	\centering
+	\includegraphics[width=0.3\textwidth]{chap4/MultiPortGPDD.eps}
+	\bicaption[fig:mpgpdd]{多端口电路的GPDD结构}{多端口电路的GPDD结构}{Fig}{GPDD structure for multi-port circuit example}
+\end{figure}
 
-这里我们定义了电路元件的重要性，某个符号的重要性意味着该电路元件符号对电路性能具有比较大的贡献。
-故高重要性的电路元件应予以保留，而低重要性的电路元件应予以删去，故如流程中所示，需要对元件的重要性进行排序。
-同时根据前几节的论述，一个符号有两种删去方式，分别为将该元件置为零或无穷大。
-我们在计算重要性的过程中即刻确定对应的删去方式，并最终在简化模型生成中以相应的删去方式删去电路元件，从而得到降阶的符号化模型。
+这里我们用符号$X_1$和$X_2$代表两组输入输出关系。如需要对电路传输函数进行计算，根据本前面内容中介绍的元件拓扑结构与GPDD之间的关系，我们可以发现某个传输函数即是在另一个输入输出对符号置零情况下得到的结果。区别于之前章节的记号，这里使用比较简单易写的$f\left( N \right)$来作为节点$N$的GPDD计算结果。所以可以根据下两式对电路的传输函数进行计算：
 
-这里有一个问题是模型需要多大精度，从而会决定简化的电路模型中保留多少相应的元件。
-在目前的研究进程中，我们仅人为指定需要保留多少电路元件，通过人为观察电路频率响应曲线，来决定当前的模型是否合适。
+\begin{eqnarray}
+{H_1}\left( s \right) = \frac{{{v_{out}}}}
+{{{v_{in1}}}} = \frac{1}
+{{{X_1}}} = \frac{{f\left( B \right)}}
+{{f\left( D \right)}} \hfill \\
+{H_2}\left( s \right) = \frac{{{v_{out}}}}
+{{{v_{in2}}}} = \frac{1}
+{{{X_2}}} = \frac{{f\left( C \right)}}
+{{f\left( D \right)}} \hfill 
+\end{eqnarray}
 
-这种简化方法可以看到在符号化构建GPDD后，最关键的时间复杂度主要集中在对元件重要性求值的这一步上。
-别的步骤虽然也有一定的时间损耗，但根据我们的实践经验，相比重要性求值步骤来说可以忽略不计。
-重要性求值需要对每个电路元件进行计算，故若一个电路中有N个电路元件，构造得到的GPDD结构共有$\left|GPDD\right|$节点。
-在\ref{subsec:simp:alg:significance}中可以看到单个元件的重要性求值需$O\left(\left|GPDD\right|\right)$的时间复杂度。
-故简化流程的时间复杂度主要由$O\left(N\left|GPDD\right|\right)$决定。
+另外可以看到电路传输函数共享同一个分母，这与基本电路两端口的性质是一致的。
+只要在满足如下定理的情况下，这种情况在推广到更多的端口与更大的电路规模仍然成立。
 
-\subsection{元件预处理过程}
-\label{subsec:simp:alg:pre}
+\begin{thm}\label{thm:mpcon}
+	在满足以下条件之一的情况下，GPDD可以用单根构造的方式构造多端口电路，且不会出现多个输入输出端口符号的交叉项：
+	\begin{enumerate}[label=\emph{\alph*})]
+		\item 所有端口的输出端均在同一端口测量同种信号（电流或电压）。
+		\item 所有端口的输入端均在同一端口施加同种信号（电流或电压）。
+	\end{enumerate}
+\end{thm}
 
-之所以要对电路进行预先简化，其主要目的在于能够事先将一些信号不通过的节点识别出来，从而事先删去一些节点和元件，方便进一步简化算法。
-许多电路从理论上分析，往往会有一定的做法；然而在实际操作中，人们往往会进一步加入自己的理解与分析，从而改变理论分析的结果，虽然过程中隐去了一些电路结构，却使进一步的分析与电路理解更加便利。
-这一点在后续的测试结果中也有所体现。
-这里以模拟电路中常见的由于输入差分对所造成的虚拟地作为例子，说明这种情况。
+这里使用生成树对枚举的方式对定理的正确给出说明，解析化的证明方式在附录\ref{app:mpcon} 中给出。
+我们只对输出端可能出现的$VC$边和$CC$边进行说明，输入端的$VS$和$CS$可以类比得到。
+
+首先来考虑VC边，我们知道，对同一个端口的电压进行测量，那么相应的所有的$VC$边必然并联。
+那么很明显如果有多个$VC$被包含的情况下，必然形成环，不会出现树的结构，故生成的GPDD中必然不含有有多个输入输出端口符号的符号化项。
+其次我们考虑CC边，对同一个端口的电流进行测量，那么相应的所有的$CC$边必然串联。
+根据GPDD理论\parencite{GShi-GPDD}，如需符号项需包含有CC边的符号，那么在生成树对中的左树中CC边并不会包含在最终的树中。
+由于，$CC$边串联，故如有两个或以上输入输出符号被包含在符号项中时，必然造成图中出现了分离的图，而分离的图无法生成树结构。
+这样的话我们就可以得到定理\ref{thm:mpcon}的条件a，条件b可以用类似的方法说明。
+
+\section{符号化敏感度分析方法}
+
+GPDD理论中关于电路的敏感度分析将大大有助于模拟电路工程师加深对电路设计的理解，帮助电路工程师对电路性能优化提供更多的具有洞察力的信息\parencite{MengXiaoxuan-Sens-2009,WengBinbin-Sens-2011,ChenJiajun-Sens-2012}。
+
+这里对符号化敏感度分析做一定回顾，并给出考虑CMRR和PSRR特殊情况下的计算规则。敏感度定义如下：
+
+\begin{equation}
+Sens\left( {H\left( s \right),p} \right) = \mathop {\lim }\limits_{\Delta p \to \infty } \left\{ {\frac{{\frac{{\Delta H\left( s \right)}}{{H\left( s \right)}}}}{{\frac{{\Delta p}}{p}}}} \right\} = \frac{p}{{H\left( s \right)}}\frac{{\partial H\left( s \right)}}{{\partial p}}
+\end{equation}
+
+敏感度反应了电路传输函数$H\left(s\right)$的变化对参数$p$的变化的所产生的影响。
+可以想象若敏感度绝对值很高，则$p$的变化会引起较大的数$H\left(s\right)$的改变。若我们选择各个MOS晶体管的宽$W$为$p$，那么就可以求得电路元件尺寸与电路性能直接关系，则可以得到如下公式。
+
+\begin{equation}\label{eq:DCSens}
+Sens\left( {H\left( s \right),{W_i}} \right) = \frac{{{W_i}}}{{H\left( s \right)}} \sum\limits_{j} \sum\limits_{p} {\frac{{\partial H\left( s \right)}}{{\partial {g_{j,p}}}}\frac{{\partial {g_{j,p}}}}{{\partial {W_i}}}}
+\end{equation}
+
+其中$W_i$为电路中$i$号MOS管的宽，而$g_{ij}$则为i号MOS管的第j个小信号参数，如：$g_m$，$g_{ds}$，$g_{mb}$，$c_{gs}$等。
+可以看到，若我们忽略别的晶体管对$i$号晶体管小信号参数的影响，则上述公式最右侧的式子中H(s)可以由GPDD进行计算，而第二个偏导数可以由器件模型以及DC偏置点决定。
+我们通过一个例子来进一步解释式\ref{eq:DCSens}的意义。
 
 \begin{exmp}
-虚拟地理论分析与实际操作区别
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.6\textwidth]{chap2/VG.eps}
-	\bicaption[fig:VG]{虚地的产生原因}{虚地的产生原因}{Fig}{Virtual ground illustration}
-\end{figure}
-
-可以看到，图\ref{fig:VG}中展现了经典的模拟电路输入差分对，这样的电路结构一般由一个电流源作为两个输入管的偏置，输入结构两端对称。
-在这种结构下，根据传统的电路分析技巧，我们可以画出如图\ref{fig:VG}右侧的小信号结构。
-其中理想电流作为断路，所以$v_tail$这一电路节点浮空，同时保留这里的两个MOS管的$g_m$电流源。
-我们可以根据$v_tail$这一电路节点的KCL关系，可列写方程有：
-
-\begin{equation}
-g_{m1}\left(v_{ip}-v_{tail}\right)+g_{m2}\left(v_{in}-v_{tail}\right)=0
-\end{equation}
-
-由于两端的对称性我们知道$v_{ip}=-v_{in}$，并且$g_{m1}=g_{m2}=g_m\neq0$，那么有
-
-\begin{equation}
-g_{m} v_{tail} = 0 \Rightarrow v_{tail} = 0
-\end{equation}
-
-所以由于尾电流的节点往往被作为虚拟地的存在，在电路分析中往往直接将这一点接到地上，而不是像小信号分析中将电路节点浮空。
-这种看似矛盾，实际合理的人为处理结果计算机往往很难自动识别，因为从电路基本理论分析，电路中的电流源应该使用断路的端口进行替代。
-即使使用MOS管进行替代，根据传统分析经验，我们知道MOS管往往会近似为一个$r_{ds}$所组成的阻抗，而单一的阻抗并不影响上述分析过程，虚地仍然存在，而往往这个阻抗往往比较大，最后仍然会作为浮空处理。
-但这与多数模拟电路工程师的设计经验不符，电路工程师会将类似的结构直接接到地上进行分析。
-
-\end{exmp}
-
-另两种常见的类似电路结构是偏置电路以及镜像电流源。如镜像电流源，往往小信号分析中，作为电流源的MOS管使用电压偏置也并不影响电路的差分工作特性。
-造成这种现象的主要原因在于电路信号往往并不直接通过这些节点进行传递，故导致了小信号电路中较低的电压值。
-为避免这些电路结构对我们的分析造成影响，我们采取以下的方式对电路进行预处理：
-
-\begin{enumerate}
-	\item 求得电路中所有节点的直流处的AC增益。
-	\item 将增益最小的节点接地，并删去应删去的元件。（元件的所有端口全接地。）
-	\item 如电路的传输相应曲线有较大变化，则终止预处理；否则，回到第2步继续处理。
-\end{enumerate}
-
-在这种方案下，我们得到比较合理以及符合工程师习惯的简化电路模型，具体结果可以参照\ref{subsec:simp:res:pre}小节。
-
-\subsection{元件重要性选取}
-\label{subsec:simp:alg:significance}
-
-元件重要性是在符号简化工程中十分重要的一个指标。
-重要性表征了电路总体性能与某个单一元件的值的密切程度。
-如果一个元件的重要性程度高，那么代表电路性能对这个元件的值十分敏感，故在最终的降阶模型电路图中应有所保留。
-针对一个运放来说，只有其运放的差分增益以及相位裕度是我们最为关心的两个指标。
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.7\textwidth]{chap2/significance.eps}
-	\bicaption[fig:significance]{元件变化对运放增益和相位裕度的影响}{元件变化对运放增益和相位裕度的影响}{Fig}{The impact of element value on gain and phase margin}
-\end{figure}
-
-可以想象，如图\ref{fig:significance}，当运放电路元件发生变化的过程中，其相应的差分增益与单位增益频率处的相位会发生变化。
-同样，如果一个元件对运放的差分增益贡献较大，那么在把这个元件从电路中以置为无穷大或者零的方式，将其从电路中删去后，电路的频率响应会发生剧烈变动。
-也就是说，一个运放的重要性基本等同于元件变化时的电路性能变化的程度。
-这一点，正是作为我们选取重要性指标的关键所在。
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.8\textwidth]{chap2/SignProcess.eps}
-	\bicaption[fig:SignProcess]{元件重要性计算流程}{元件重要性计算流程}{Fig}{Element significance calculation process}
-\end{figure}
-
-总结来说，元件重要性计算的整体流程如图\ref{fig:SignProcess}所示。
-在算法运行初期，我们得到了运放在一般情况下的差分增益$A_0$以及其在单位频率$UGF$处的相位$PM_0$。
-接下来，假设我们需要对电路中的元件$S$求取重要性，那么我们首先将$S$的值置为无穷大，取得此时的运放差分增益$A|_G$以及其在单位频率$UGF$处的相位$PM|_G$，并记录相应的操作为$op1$。
-然后，将$S$的值置为零，取得此时的运放差分增益$A|_{\overline G}$以及其在单位频率$UGF$处的相位$PM|_{\overline G}$，并记录相应的操作为$op2$。
-在获得了相应的变化之后，我们可以分别计算得到电路在两种情况下分别的电路AC性能的变动指标。
-这里我们采用了平方和开根的方式对增益和相位两个指标进行融合。
-同时，为了保证两种不同的物理量之间相互能够比较，采用了相对误差的计算方式，如下两式所示：
-
-\begin{equation}
-\varepsilon {|_G} = \sqrt {{{\left( {\frac{{A{|_G} - {A_0}}}
-				{{{A_0}}}} \right)}^2} + {{\left( {\frac{{PM{|_G} - P{M_0}}}
-				{{P{M_0}}}} \right)}^2}}
-\end{equation}
-
-\begin{equation}
-\varepsilon {|_{\overline G }} = \sqrt {{{\left( {\frac{{A{|_{\overline G }} - {A_0}}}
-				{{{A_0}}}} \right)}^2} + {{\left( {\frac{{PM{|_{\overline G }} - P{M_0}}}
-				{{P{M_0}}}} \right)}^2}}
-\end{equation}
-
-在获得将电路元件置为无穷大和零情况下相应的电路性能的变化$\varepsilon {|_G}$和$\varepsilon {|_{\overline G }}$之后，我们选取其中较小的一个作为之后用于排序的重要性指标$\varepsilon$，同时记得记录对应的删去操作$op$，即如下式：
-
-\begin{equation}
-\varepsilon  = \min \left\{ {{\varepsilon {|_G}},{\varepsilon {|_{\overline G }}}} \right\}
-\end{equation}
-
-之所以选择较小的$\varepsilon$作为该元件的重要性，主要是因为我们希望在删去电路元件的过程中，应该尽可能小地改变电路的性能指标。
-即所选择的$\varepsilon$所对应的删去方式，更适合作为该元件的删去方式，因为删去该元件之后，对电路产生的影响较小。
-如有一个电阻，如果其值非常小，可以近似视为短路时，那么明显$\varepsilon {|_G}$会小于$\varepsilon {|_{\overline G }}$，这时应将该电路短路，即选择$\varepsilon {|_G}$作为其重要性，并进行接下来的操作。
-
-可以看到重要性计算过程中需要求取在元件值为零和无穷大时分别的AC增益和$UGF$处的相位，故需要对两种符号情况的两个频率点分别计算电路的传输函数。
-这总共需要对GPDD进行4次遍历过程，才可以完成，如忽略常数系数，则重要性计算的时间复杂度约为$\left|GPDD\right|$。
-
-\subsection{简化特殊情况分析}
-\label{subsec:simp:alg:special}
-
-在简化过程中，存在两种可能的简化特殊情况，需要区别处理。
-出现这些情况的主要原因是对应的电路中拓扑结构不合理造成的。
-为了使算法能尽可能稳定运行，在不影响电路性能的情况，尽可能多地删去较多的元件。
-应对这些情况做出合适处理，以使算法尽可能稳定。
-
-\subsubsection{元件重要性计算过程中处理}
-\label{subsubsec:simp:alg:special:sign}
-
-首先在重要性计算过程中，我们是将电路元件的值置为零或无穷大的情况下，然后计算相应的重要性。
-但是有可能出现这样的情况，比如某个电路元件承担了将信号从上一级传递到下一级的职责。
-那么我们在计算其重要性过程中，如将其值置为无穷大，那么其输出也为无穷大（在程序中显示其值为INF）；
-如将其值置为零，那么其输出与输入无关（在程序中显示其值为NAN）。
-这两种情况都是我们不期望看到的。所以应规定相应的规则，处理类似情况。我们规定如下规则，处理类似情况：
-
-\begin{enumerate}[label=\emph{\alph*})]
-	\item 如没有删去方式会导致对应的重要性$\varepsilon$为INF或者NAN，那么按照\ref{subsec:simp:alg:significance}中的重要性计算方式计算。
-	\item 如有仅一种删去方式导致对应的重要性$\varepsilon$为INF或者NAN，那么无论另一种删去方式的重要性$\varepsilon$大小，选择另一种删去方式，并记录重要性。
-	\item 如果两种删去方式都会导致对应的重要性$\varepsilon$为INF或者NAN，那么对该元件的操作方式记录为保留，即在后续处理中忽略该元件。
-\end{enumerate}
-
-通过这种方式，将有效地避免上述出现的情况。保证算法运行的稳定，尽可能多地删去电路元件，以得到合理的低阶电路模型。
-
-\subsubsection{最终电路图中删去元件过程处理}
-\label{subsubsec:simp:alg:special:reduce}
-
-另一种特殊情况发生在最终对电路进行电路图层面的约减过程中。因为在电路图的约减过程中，我们仍然需要监控电路的传输函数变化，来确定最终的小信号简化低阶模型的形式。
-有些电路需要多个电路元件删去后，才会出现电路传输函数的计算过程中的异常值（NAN或INF）。
-这种情况在GPDD计算中，一种常见的情况是电路出现了孤立节点。
-然而由于GPDD的构造过程，是枚举电路生成树对，如果由于简化电路，孤立的节点不会出现生成树中，那么就无法计算对应的GPDD的值。
-这种情况往往需要对元件的删去方式进行翻转，因为往往这种情况并不影响最终的传输函数结果。下面用一个例子对这种情况进行说明。
-
-\begin{exmp}
-电路中多余元件对GPDD求值的影响
+	运放中的敏感度公式意义
 	
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.6\textwidth]{chap2/CancelCase.eps}
-	\bicaption[fig:CancelCase]{电路图约减过程中特殊情况说明}{电路图约减过程中特殊情况说明}{Fig}{Special case in simplified circuit graph reduction}
-\end{figure}
-
-可以看到图\ref{fig:CancelCase}中展示了一个多余的电路元件电阻$R$，现在考虑将电阻R删去。
-可以看到不论如何删去R都不会影响到电路的传输函数的相应，可是在GPDD中，只有下一种情况是可以继续计算的，因为红色的节点仍然能包含最终的生成树中；
-而另一种情况则不包含。这种情况下，GPDD求值存在困难。故如当我们发现类似图\ref{fig:CancelCase}中的情况发生时，及时地改变电路元件的删去方式，那么可以得到可计算的GPDD结构。
-
+	\begin{figure}[!htp]
+		\centering
+		\includegraphics[width=0.7\textwidth]{chap4/TSExample.eps}
+		\bicaption[fig:tsexample]{用于敏感度说明的两级运放电路}{用于敏感度说明的两级运放电路}{Fig}{Two-stage opamp for sensitivity explanation}
+	\end{figure}
+	
+	考虑图\ref{fig:tsexample}中的运放电路，如果我们需要对这里的$M_1$管的宽$W_1$进行敏感度分析。
+	根据式\ref{eq:DCSens}中所示，可以得到如下的推导：
+	
+	\begin{align}
+		Sens\left( {H\left( s \right),{W_1}} \right) &= \frac{{{W_1}}}
+		{{H\left( s \right)}}\frac{{\partial H\left( s \right)}}
+		{{\partial {W_1}}} \nonumber \\ 
+		&= \frac{{{W_1}}}
+		{{H\left( s \right)}}\left( {\sum\limits_p {\frac{{\partial H\left( s \right)}}
+				{{\partial {g_{1,p}}}}\frac{{\partial {g_{1,p}}}}
+				{{\partial {W_1}}}}  + \sum\limits_{j \ne 1,p} {\frac{{\partial H\left( s \right)}}
+				{{\partial {g_{j,p}}}}\frac{{\partial {g_{j,p}}}}
+				{{\partial {W_1}}}} } \right) \nonumber \\ 
+		&= \frac{{{W_1}}}
+		{{H\left( s \right)}}\left( {\frac{{\partial H\left( s \right)}}
+			{{\partial {\textcolor{orange}{g_{m1}}}}}\frac{{\partial {\textcolor{orange}{g_{m1}}}}}
+			{{\partial {W_1}}} +  \cdots  + \frac{{\partial H\left( s \right)}}
+			{{\partial {\textcolor{blue}{g_{ds3}}}}}\frac{{\partial {\textcolor{blue}{g_{ds3}}}}}
+			{{\partial {\textcolor{red}{V_X}}}}\frac{{\partial {\textcolor{red}{V_X}}}}
+			{{\partial {W_1}}} +  \cdots } \right)
+	\end{align}
+	
+	可以看到在最后一步中展开的两项中，其中第一项仅与$M_1$管的参数有关，而第二项还与$M_3$管有关。
+	造成这种现象的原因主要在于当改变$W_1$的时候，必然会对$X$节点的电压造成影响，故会影响$M_3$管偏置情况，故此时可与$M_3$管中的小信号参数相关。
+	
 \end{exmp}
 
-可以看到只要翻转删去方式，往往可以避免此类的情况的出现；如翻转了仍无效果，可如上一小节\ref{subsubsec:simp:alg:special:sign}中所介绍的一样，保留该元件。
-究其深层次的原因，主要是因为GPDD并不完全没有对消项造成的，仍存在类似公因子对消项，这一点会在附录\ref{app:cancel}中给出详细的说明。
-
-\section{降阶模型生成算法测试结果与分析}
-\label{sec:simp:res}
-
-以上的算法从GPDD构造步骤开始，均使用C/C++编写，并在个人电脑的Linux Mint 16的虚拟机上进行测试。
-在本文中所有的含有MOSFET的测试电路，均采用TSMC $0.18 \mu m$工艺，使用$1.8V$的电源电压。
-所有MOSFET的衬底均接至电源或衬底，即考虑衬底偏置效应。
-并采用如图\ref{fig:mos_model}的MOSFET管小信号模型，作为电路简化的起点。
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.45\textwidth]{chap2/res/mos_model.eps}
-	\bicaption[fig:mos_model]{MOSFET器件小信号模型}{MOSFET器件小信号模型}{Fig}{Small signal model for MOSFET device}
-\end{figure}
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.6\textwidth]{chap2/res/two_stage.eps}
-	\bicaption[fig:two_stage]{两级运算放大器电路图}{两级运算放大器电路图}{Fig}{Two-stage opamp schematic}
-\end{figure}
-
-本文最常用的测试电路使用如图\ref{fig:two_stage}所示的传统的两级运算放大器，其具体的MOS管的大小以及偏置电压的选取可以参考\ref{subsec:simp:res:size}中的表\ref{tab:TS_CommonSize}和表\ref{tab:TS_Size}中的0号尺寸方案。
-
-\subsection{预处理简化降阶电路模型区别}
-\label{subsec:simp:res:pre}
-
-首先我们观察电路元件预处理步骤对简化电路的效果。
-在表\ref{tab:TS_PreProcess}中列出了原始电路的各个电路节点的AC增益情况，并从小到大排序。
-可以看到那些不会通过信号的电路节点（如$V_{bp}$和$tail$）都有比较小的AC增益。
-在继续尝试将$x$节点接地后，会发现电路性能发生了巨大的变化，故只有$V_{bp}$和$tail$被接地。
-
-\begin{table}[!htbp]
-	\bicaption[tab:TS_PreProcess]{两级运放预处理计算各节点AC相应}{两级运放预处理计算各节点AC相应}{Table}{AC Response for each node in two-stage opamp}
-	\centering
-	\begin{tabular}{c|c|c}
-		\hline
-		  节点名    & 直流处AC增益 &   是否预先接地   \\ \hline
-		$V_{bp}$ & $20\mu$ & \checkmark \\
-		 $tail$  & $215m$  & \checkmark \\
-		  $x$    & $384m$  & \texttimes \\
-		$out_1$  &  $82$   & \texttimes \\
-		  $z$    & $5.4k$  & \texttimes \\
-		$out_2$  & $5.4k$  & \texttimes \\ \hline
-	\end{tabular}
-\end{table}
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.8\textwidth]{chap2/res/TS_simp.eps}
-	\bicaption[fig:TS_simp]{无虚拟地的两级运放简化小信号电路}{无虚拟地的两级运放简化小信号电路}{Fig}{Simplified small-signal circuit for two-stage opamp without virtual ground}
-\end{figure}
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.7\textwidth]{chap2/res/TS_Curve.eps}
-	\bicaption[fig:TS_Curve]{无虚拟地的两级运放频率响应曲线比较}{无虚拟地的两级运放频率响应曲线比较}{Fig}{Frequency response comparison for two-stage opamp without virtual ground}
-\end{figure}
-
-可以在图\ref{fig:TS_simp}中看到，这是传统两级运算放大器的简化结果，并在图\ref{fig:TS_Curve}给出了完整电路的HSPICE、GPDD以及简化电路的GPDD仿真频率响应曲线的比较结果。
-在简化的小信号电路图中，可以清晰地看到电路被明显地分为了两级，而且每一级由一个传统的$g_m R C$的极点模型替代，保留下最为关键的电路元件。
-其中第一级中有一个$g_{m2}$、$g_{m4}$和$c_{db2}$组成的小电路结构，这主要起到了运放中通过镜像管M4，给M3提供输入信号的拷贝的作用。
-同时补偿的电容$C_c$和调零电阻$R_z$均在自动生成的简化降阶模型中得到保留。
-对比\parencite{GRAY-Analog}中的对两级运放的分析，给出了相应的DC增益，可参考下式。
+关于式\ref{eq:DCSens}第一项偏导数的计算，其实十分类似我们选取元件取值为无穷大是的计算过程，首先我们假设$H\left(s\right)$的公式如下式所示：
 
 \begin{equation}
-{A_v} = {A_{v1}}{A_{v2}} =  - {g_{m1}}\left( {{r_{o1}}||{r_{o3}}} \right){g_{m6}}\left( {{r_{o6}}||{r_{o7}}} \right)
+H\left( s \right) = \frac{{N\left( s \right)}}{{D\left( s \right)}} = \frac{{{N_1}\left( s \right)Y + {N_2}\left( s \right)}}{{{D_1}\left( s \right)Y + {D_2}\left( s \right)}}
 \end{equation}
 
-可以看到所有公式的有关的电路元件均得以得到保存。
-同时利用并不是很多的电容元件完成了频率响应的模拟。
-可以看到这三个电容分别模拟了\parencite{Allen-Analog}中描述的电路中主极点、次极点和镜像极点。
-所以，该算法得到的电路模型还是十分准确的，而且易于电路工程师分析与理解。
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.7\textwidth]{chap2/res/TS_VG_simp.eps}
-	\bicaption[fig:TS_VG_simp]{有虚拟地的两级运放简化小信号电路}{有虚拟地的两级运放简化小信号电路}{Fig}{Simplified small-signal circuit for for two-stage opamp with virtual ground}
-\end{figure}
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.7\textwidth]{chap2/res/TS_VG_Curve.eps}
-	\bicaption[fig:TS_VG_Curve]{有虚拟地的两级运放频率响应曲线比较}{有虚拟地的两级运放频率响应曲线比较}{Fig}{Frequency response comparison for two-stage opamp with virtual ground}
-\end{figure}
-
-为了考察如不做元件预处理的运算放大器简化结果，这里给出了没有预先使$tail$节点接地的简化电路结构，如图\ref{fig:TS_VG_simp}所示，其相应的频率响应比较结果在图\ref{fig:TS_VG_Curve}中给出。
-可以看到如果没有实现做元件的预处理，会得到含有虚拟地的电路结构。
-明显经过预处理的电路结构简化结构更令人满意且简洁。
-在将来的设计中，可以将这一功能放开给工程师选取，看是否有必要进行预处理简化。
-
-\subsection{多种电路结构简化结果分析}
-\label{subsec:simp:res:cir}
-
-\subsubsection{折叠共源共栅运算放大器拓扑简化结果}
-\label{subsubsec:simp:res:cir:fd}
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.6\textwidth]{chap2/res/folded_cascode.eps}
-	\bicaption[fig:folded_cascode]{折叠共源共栅运算放大器电路图}{折叠共源共栅运算放大器电路图}{Fig}{Folded-cascode opamp schematic}
-\end{figure}
-
-除了普通的二级运算放大器外，本算法也适用于别的电路结构，如图中\ref{fig:folded_cascode}所示的折叠共源共栅电路结构。
-
-\begin{table}[!htbp]
-	\bicaption[tab:FC_PreProcess]{折叠共源共栅运放预处理计算各节点AC相应}{折叠共源共栅运放预处理计算各节点AC相应}{Table}{AC Response for each node in folded-cascode opamp}
-	\centering
-	\begin{tabular}{c|c|c}
-		\hline
-		   节点名     & 直流处AC增益 &   是否预先接地   \\ \hline
-		 $V_{bn}$  &   $0$   & \checkmark \\
-		$V_{bp1}$  &   $0$   & \checkmark \\
-		$V_{tail}$ & $712p$  & \checkmark \\
-		$V_{bp2}$  &  $48n$  & \checkmark \\
-		  $tail$   & $447m$  & \checkmark \\
-		 $cas_1$   &  $2.7$  & \texttimes \\
-		 $cas_1$   & $24.6$  & \texttimes \\
-		   $x$     &  $3.6$  & \texttimes \\
-		   $y$     &  $2.6$  & \texttimes \\
-		   $z$     &  $82$   & \texttimes \\
-		  $out$    & $3.0k$  & \texttimes \\ \hline
-	\end{tabular}
-\end{table}
-
-表\ref{tab:FC_PreProcess}中展示了需要预先接地的电路节点。
-可以看到同样是运放的电路的多个偏置节点以及尾电流处构成的虚拟地需要预先接地，这与我们之前的预期是相符的。
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.9\textwidth]{chap2/res/FC_simp.eps}
-	\bicaption[fig:FC_simp]{折叠共源共栅运放简化小信号电路}{折叠共源共栅运放简化小信号电路}{Fig}{Simplified small-signal circuit for folded-cascode opamp}
-\end{figure}
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.7\textwidth]{chap2/res/FC_Curve.eps}
-	\bicaption[fig:FC_Curve]{折叠共源共栅运放频率响应曲线比较}{折叠共源共栅运放频率响应曲线比较}{Fig}{Frequency response comparison for folded-cascode opamp}
-\end{figure}
-
-简化得到的电路结构如图\ref{fig:FC_simp}所示，其相应的频率响应比较在图\ref{fig:FC_Curve}中展示。
-可以看到简化的小信号电路正如\parencite{GRAY-Analog,Allen-Analog}等多本传统模拟集成电路教材中所学习的电路共源共栅复合MOS管结构的小信号模型。
-同样对比\parencite{GRAY-Analog}中给出的DC增益公式：
+我们知道线性电路的传输函数一定是一个有理多项分式。
+故分子$N\left(s\right)$和分母$D\left(s\right)$均为乘积项之和（Sum of Products，SOP）的形式，且显然分别为GPDD根节点的左右子结构。
+$Y$是电路中某个元件的导纳值或者受控源的系数。
+显然，我们可以将$N\left(s\right)$和$D\left(s\right)$分解为不包含$Y$这一项的$N_1\left(s\right)$、$N_2\left(s\right)$、$D_1\left(s\right)$和$D_2\left(s\right)$四个式子。
+可以注意到由于GPDD结构节点求值的方法，每个节点总是乘以左边的节点的值并加上右边节点的值。
+故可以想到$N_1\left(s\right)$是GPDD根节点左侧子结构中忽略所有Y节点的右边连接关系得到的结果，以此类推，可以得到$N_2\left(s\right)$、$D_1\left(s\right)$和$D_2\left(s\right)$相应在GPDD中对应的结构。
+对于求取偏导数，我们有
 
 \begin{equation}
-\begin{gathered}
-{A_v} = {G_m}{R_o} =  - {g_{m1}}\left[ {\left( {{R_{out,4}}} \right)||\left( {{R_{out,6}}} \right)} \right] \hfill \\
-{R_{out,4}} = \left[ {{g_{m4}}\left( {{r_{ds2}}||{r_{ds12}}} \right)} \right]{r_{ds4}} \hfill \\
-{R_{out,6}} = \left( {{g_{m6}}{r_{ds8}}} \right){r_{ds6}} \hfill \\ 
-\end{gathered}
+\frac{{\partial H\left( s \right)}}
+{{\partial Y}} = \frac{{\frac{{\partial N\left( s \right)}}
+		{{\partial Y}}D\left( s \right) - N\left( s \right)\frac{{\partial D\left( s \right)}}
+		{{\partial Y}}}}
+{{{D^2}\left( s \right)}} = \frac{{{N_1}\left( s \right)D\left( s \right) - N\left( s \right){D_1}\left( s \right)}}
+{{{D^2}\left( s \right)}}
 \end{equation}
 
-可以看到除了$r_{ds2}$之外，所有的电路符号均在公式中出现。
-替代$r_{ds2}$位置的是电流管$M12$的$r_{ds12}$，说明在这里电路的电流源阻抗较小，可能会提醒电路工程师对电流源的输出阻抗进行优化，或者采用更好的电路结构等。
-
-另外此电路中还有一处需要多加说明，电路的输入级中$g_{m3}$和$g_{m7}$所构成的通路并不是直接算法简化得到的电路。
-算法简化得到的电路如图\ref{fig:Nullor2Res}左侧所示。
-其中$g_{m5}$被简化为Nullor，故形成了虚短虚短的特性。通过简单分析，即可发现可以将$g_{m5}$和$g_{m7}$合并为一个电路元件接在电路节点$x$和地之间，并以$g_{m7}$作为其导纳值。
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.4\textwidth]{chap2/res/Nullor2Res.eps}
-	\bicaption[fig:Nullor2Res]{折叠共源共栅运放降阶模型中的Nullor等效}{折叠共源共栅运放降阶模型中的Nullor等效}{Fig}{Equivalent circuit topology for nullor in simplified folded-cascode opamp}
-\end{figure}
-
-\subsubsection{多种补偿结构的两级运算放大器拓扑简化结果}
-\label{subsubsec:simp:res:cir:ts}
-
-另外，本课题还针对另两种常见的电路补偿方式进行简化模型生成的测试，分别为图\ref{fig:VB}中的Voltage Buffer补偿方法和图\ref{fig:CB}中的Current Buffer补偿方法。
-这两种方法都尝试解决由于补偿电容所导致的零点引入的问题，尝试通过打破前馈通路，形成单向的反馈的方法对电路的频率性能进行优化。
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.7\textwidth]{chap2/res/VB.eps}
-	\bicaption[fig:VB]{Voltage Buffer补偿的两级运算放大器电路图}{Voltage Buffer补偿的两级运算放大器电路图}{Fig}{Two-stage opamp schematic with voltage buffer compensation}
-\end{figure}
-
-Voltage Buffer的补偿方式比较简单，相应的Sizing过程也更为方便，在原始电路调整完成后，基本只需考虑补偿电路的部分的调整即可。
-Current Buffer的尺寸调整方法往往不是很容易。
-在图\ref{fig:CB}中可以看到，由于有两条DC通路（蓝色的补偿电路通路和绿色的第一级输出端通路）影响节点$out_1$，所以$out_1$的DC偏置变得较为困难，同时由于更多的阻抗接入$out_1$节点，其直流增益也相应下降。
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.8\textwidth]{chap2/res/CB.eps}
-	\bicaption[fig:CB]{Current Buffer补偿的两级运算放大器电路图}{Current Buffer补偿的两级运算放大器电路图}{Fig}{Two-stage opamp schematic with current buffer compensation}
-\end{figure}
-
-图\ref{fig:VB_simp}和图\ref{fig:VB_Curve}中分别给出了Voltage Buffer补偿的两级运放电路的简化小信号电路图与对应的频率响应比较图。
-可以看到，除却补偿部分，其余的电路结构与使用凋零电阻的补偿方式一致。
-补偿部分根据\parencite{VB1,VB2}的分析，可以看到补偿电路与文献中通常的分析一致，打破了前馈的通路。
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=\textwidth]{chap2/res/VB_simp.eps}
-	\bicaption[fig:VB_simp]{Voltage Buffer补偿的运放简化小信号电路}{Voltage Buffer补偿的运放简化小信号电路}{Fig}{Simplified small-signal circuit for two-stage opamp with voltage buffer compensation}
-\end{figure}
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.7\textwidth]{chap2/res/VB_Curve.eps}
-	\bicaption[fig:VB_Curve]{Voltage Buffer补偿的运放频率响应曲线比较}{Voltage Buffer补偿的运放频率响应曲线比较}{Fig}{Frequency response comparison for two-stage opamp with voltage buffer compensation}
-\end{figure}
-
-同样的，图\ref{fig:CB_simp}和图\ref{fig:CB_Curve}中分别给出了Current Buffer补偿的两级运放电路的简化小信号电路图与对应的频率响应比较图。
-也可以看到，除却补偿部分，其余的电路结构与使用凋零电阻的补偿方式基本一致。
-但是可以看到由于补偿的加入，运放的第一级增益部分挂上了$r_{ds12}$这个阻抗，减小了电路增益。
-并且由于$c_{gs9}$的出现，使第一级形成的极点位置更低。
-补偿部分根据\parencite{CB1,CB2,Allen-Analog}的分析，可以看到本算法抓出了不同文献中提到的需要考虑的电路元件，证明了该算法在不同电路拓扑结构情况下的有效性。
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.9\textwidth]{chap2/res/CB_simp.eps}
-	\bicaption[fig:CB_simp]{Current Buffer补偿的运放简化小信号电路}{Current Buffer补偿的运放简化小信号电路}{Fig}{Simplified small-signal circuit for two-stage opamp with current buffer compensation}
-\end{figure}
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.7\textwidth]{chap2/res/CB_Curve.eps}
-	\bicaption[fig:CB_Curve]{Current Buffer补偿的运放频率响应曲线比较}{Current Buffer补偿的运放频率响应曲线比较}{Fig}{Frequency response comparison for two-stage opamp with current buffer compensation}
-\end{figure}
-
-\subsection{尺寸调整下的算法稳定性分析}
-\label{subsec:simp:res:size}
-
-同时，针对同一种电路拓扑结构，在运放有不同的尺寸调整情况下，也应该保证该算法的稳定性。
-故这里对两级运算放大器进行了三次的尺寸调整过程。
-表\ref{tab:TS_CommonSize}中给出了三个运放共同的参数，而表\ref{tab:TS_Size}给出了三次运放尺寸参数调整过程中的具体调整方法。
-
-\begin{table}[!htbp]
-	\bicaption[tab:TS_CommonSize]{两级运放尺寸共同参数}{两级运放尺寸共同参数}{Table}{Common parameter sizing for two-stage opamps}
-	\centering
-	\begin{tabular}{c|c}
-		\hline
-		      参数       &     值      \\ \hline
-		电流偏置电压$V_{bp}$ &  $1.12 V$  \\
-		  负载电容$C_L$    &   $2pF$    \\
-		 所有MOS管的长$L$   & $0.5\mu m$ \\
-		  供电电压$Vdd$    &   $1.8V$   \\ \hline
-	\end{tabular}
-\end{table}
-
-\begin{table}[!htbp]
-	\bicaption[tab:TS_Size]{两级运放的不同尺寸方案}{两级运放的不同尺寸方案}{Table}{Sizing strategy for two-stage opamps}
-	\centering
-	\begin{tabular}{c|c|c|c}
-		\hline
-		        参数          &     0号尺寸方案     &     1号尺寸方案     &    2号尺寸方案     \\ \hline
-		      输入偏置电压        &    $0.9 V$     &    $0.7 V$     &    $1.1 V$    \\
-		$W\left(M_1\right)$ &   $20 \mu m$   &   $40 \mu m$   &  $25 \mu m$   \\
-		$W\left(M_2\right)$ &   $20 \mu m$   &   $40 \mu m$   &  $25 \mu m$   \\
-		$W\left(M_3\right)$ &   $5 \mu m$    &  $1.5 \mu m$   &   $1 \mu m$   \\
-		$W\left(M_4\right)$ &   $5 \mu m$    &  $1.5 \mu m$   &   $1 \mu m$   \\
-		$W\left(M_5\right)$ &   $48 \mu m$   &   $12 \mu m$   &  $10 \mu m$   \\
-		$W\left(M_6\right)$ &   $30 \mu m$   &  $33.5 \mu m$  &  $32 \mu m$   \\
-		$W\left(M_7\right)$ &  $144 \mu m$   &  $144 \mu m$   &  $144 \mu m$  \\
-		       $R_z$        & $1.75 k\Omega$ & $1.75 k\Omega$ & $1.5 k\Omega$ \\
-		       $C_c$        &    $350 fF$    &    $350 fF$    &   $250 fF$    \\ \hline
-	\end{tabular}
-\end{table}
-
-为了保证结果有一定的可比较性，这里三种尺寸方案都保存了18个电路元件，作为比较。
-图\ref{fig:TS_07_simp}和\ref{fig:TS_11_simp}分别展现了1号尺寸方案和2号尺寸方案的简化电路结果图；0号尺寸方案的结果已在之前的图\ref{fig:TS_simp}中给出。
-可以看到三者之间并不存在巨大区别。0号和2号尺寸方案的简化模型甚至一模一样，1号与另外两者的区别仅在于镜像电容和第二级电容上做出了取舍。
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.8\textwidth]{chap2/res/TS_07_simp.eps}
-	\bicaption[fig:TS_07_simp]{1号尺寸调整方案的的运放简化小信号电路}{1号尺寸调整方案的的运放简化小信号电路}{Fig}{Simplified small-signal circuit for two-stage opamp with 1st sizing method}
-\end{figure}
-
-\begin{figure}[!htp]
-	\centering
-	\includegraphics[width=0.8\textwidth]{chap2/res/TS_11_simp.eps}
-	\bicaption[fig:TS_11_simp]{2号尺寸调整方案的的运放简化小信号电路}{2号尺寸调整方案的的运放简化小信号电路}{Fig}{Simplified small-signal circuit for two-stage opamp with 2nd sizing method}
-\end{figure}
-
-同时，可以在表\ref{tab:TS_Significance}中发现所有尺寸调整方案中发生变化的元件$c_{db2}$和$c_{db7}$均在所有的18个保留下的元件重要性排在末尾。
-这说明这两个元件原本对电路的贡献较小，故发生了调整，并不令人惊讶，仍然在可接受范围内。
-可以看到本课题提出的算法在同一电路上不同偏置，不同参数尺寸的情况下，仍然可以稳定运行，具有较高的可信度。
-
-\begin{table}[!htbp]
-	\bicaption[tab:TS_Significance]{不同尺寸下的两级运放元件重要性排序}{不同尺寸下的两级运放元件重要性排序（编号靠前重要性越大。）}{Table}{Symbol order of opamp under different sizings (Symbol with smaller No. is more significant.)}
-	\centering
-	\begin{tabular}{c|c|c|c}
-		\hline
-		 编号  &  0号尺寸方案   &  1号尺寸方案   &  2号尺寸方案   \\ \hline
-		$1$  &    $X$    &    $X$    &    $X$    \\
-		$2$  &  $C_{c}$  & $g_{m6}$  & $g_{m6}$  \\
-		$3$  & $g_{m6}$  &  $C_{c}$  &  $C_{c}$  \\
-		$4$  &  $C_{L}$  &  $C_{L}$  &  $C_{L}$  \\
-		$5$  &  $R_{z}$  &  $R_{z}$  &  $R_{z}$  \\
-		$6$  & $g_{m1}$  & $r_{ds7}$ & $g_{m1}$  \\
-		$7$  &  $E_{1}$  & $c_{gs6}$ &  $E_{1}$  \\
-		$8$  & $g_{m4}$  & $g_{m1}$  & $g_{m4}$  \\
-		$9$  &  $E_{2}$  &  $E_{1}$  &  $E_{2}$  \\
-		$10$ & $g_{m3}$  & $g_{m4}$  & $g_{m3}$  \\
-		$11$ & $g_{m2}$  &  $E_{2}$  & $r_{ds7}$ \\
-		$12$ & $r_{ds1}$ & $g_{m3}$  & $g_{m2}$  \\
-		$13$ & $r_{ds7}$ & $g_{m2}$  & $r_{ds1}$ \\
-		$14$ & $c_{gs6}$ & $r_{ds1}$ & $c_{gs6}$ \\
-		$15$ & $r_{ds6}$ & $r_{ds3}$ & $r_{ds3}$ \\
-		$16$ & $r_{ds3}$ & $r_{ds6}$ & $r_{ds6}$ \\
-		$17$ & $c_{db2}$ & $c_{db1}$ & $c_{db2}$ \\
-		$18$ & $c_{db1}$ & $c_{db7}$ & $c_{db1}$ \\ \hline
-	\end{tabular}
-\end{table}
-
-\subsection{简化符号化模型阶数比较}
-\label{subsec:simp:res:order}
-
-最后，本小节给出了模型降阶前和降阶后的模型阶数的数据，具体详见表\ref{tab:MOR}。
-模拟电路中模型的阶数由电路的零极点个数决定，这里测试得到的零极点个数通过HSPICE的零极点分析得到。
-可以看到在所有的测试结果中都显示出显著的零极点个数减少。
-多数电路仅只剩下3-4个极点和1-2个零点，这样规模的模型已经可以通过人为手工分析，给电路工程师带来了许多便利。
-
-\begin{table}[!htbp]
-	\bicaption[tab:MOR]{电路符号化模型阶数比较}{电路符号化模型阶数比较}{Table}{Model order comparison between original and simplified circuits}
-	\centering
-	\begin{tabular}{c|c|c|c|c}
-		\hline
-		\multirow{2}{*}{电路类型} & \multicolumn{2}{c|}{原始电路} & \multicolumn{2}{c}{简化电路} \\ \cline{2-5}
-		                      & 极点个数 &        零点个数        & 极点个数 &       零点个数        \\ \hline
-		      折叠共源共栅运放        &  9   &         8          &  3   &         1         \\
-		      调零补偿两级运放        &  6   &         6          &  4   &         2         \\
-		Voltage Buffer补偿两级运放  &  6   &         6          &  3   &         2         \\
-		Current Buffer补偿两级运放  &  7   &         7          &  4   &         2         \\ \hline
-	\end{tabular}
-\end{table}
+上式表示传输函数针对某个电路元件Y的偏导数与$N\left(s\right)$，$D\left(s\right)$，$N_1\left(s\right)$和$D_1\left(s\right)$有关。
+可以注意到仅有与$Y$相乘的项得到了保留，相对应的在GPDD中，即仅有与$Y$节点的左边节点才计入计算，右边节点则忽略，这与求取元件无穷大取值情况下的GPDD计算是一致的。
+同样的，同时需要注意到由于GPDD的共享性质，有些从根节点到1结点的路径不会经过Y节点，这种项也不能计入其中。
 
 \section{本章小结}
-\label{sec:simp:con}
 
-本章对本文的关键技术符号降阶模型的自动生成进行了详细介绍，并分析了加入各个流程原因以及需要考虑的特殊情况。
-该算法的有效性与稳定性得到了不同电路拓扑结构，不同尺寸参数情况下的验证。
-通过广泛大量的测试，可以看到本文提出的符号化降阶算法有效并且稳定地降低了电路模型的阶数，并且得到十分合理、易于电路工程师进行理解的简化电路小信号模型。
-这里采用的关键技术为符号化拓扑的简化的方法。这一方法相对于传统的一些符号化简化方法，总结下来，有以下几方面优势：
-
-\begin{enumerate}[label=\emph{\alph*})]
-	\item 可以直接给出简化后的电路拓扑结构，易于模拟电路工程师进行分析。
-	\item 在过程中，同时得到电路的符号化公式，可直接提供给用户做进一步分析。
-	\item 得到的简化结果直接对应于原始电路中的电路元件，有助于做尺寸调整，避免了传统方法中简化结果无法对应会电路的问题。
-	\item 区别于传统矩阵降阶方法，是一种启发式的符号化模型降阶方法。
-\end{enumerate}
+本章给出了一系列有关GPDD电路简化的理论与敏感度分析的方法，并通过多个电路实例向读者介绍这些理论的具体意义。
+这些理论建立了电路元件取值与电路拓扑结构之间的关系，为下一步的电路低阶模型的生成打下了坚实的理论基础。
+多端口构造理论在分析含有多端口的电路情况下，可以有大量的应用，如同时分析CMRR、PSRR等。
+敏感度分析往往可以用于电路的元件尺寸的优化改进等方面，方便了电路的调整。

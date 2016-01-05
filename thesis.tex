@@ -4,7 +4,7 @@
 %%==================================================
 
 % 双面打印
-\documentclass[master, fontset=adobe, openany, oneside, zihao=-4]{sjtuthesis}
+\documentclass[master, fontset=adobe, openany, oneside, zihao=-4, review]{sjtuthesis}
 % \documentclass[bachelor, fontset=adobe, openany, oneside, zihao=-4, submit]{sjtuthesis} 
 % \documentclass[master, adobefonts, review]{sjtuthesis} 
 % \documentclass[%
@@ -30,6 +30,8 @@
 \makeenglishtitle
 
 \makeatletter
+
+\ifsjtu@review\relax\else
 \ifsjtu@submit\relax
 	\includepdf{pdf/original.pdf}
 	\cleardoublepage
@@ -38,6 +40,7 @@
 \else
 	\makeDeclareOriginal
 	\makeDeclareAuthorization
+\fi
 \fi
 \makeatother
 
@@ -87,13 +90,13 @@
 %% 致谢、发表论文、申请专利、参与项目、简历
 %% 用于盲审的论文需隐去致谢、发表论文、申请专利、参与的项目
 \makeatletter
-\ifsjtu@review\relax\else
+%\ifsjtu@review\relax\else
   \include{tex/ack} 	  %% 致谢
   \include{tex/pub}	  %% 发表论文
 % \include{tex/patents}	  %% 申请专利
 % \include{tex/projects}  %% 参与的项目
 % \include{tex/resume}	  %% 各人简历
-\fi
+%\fi
 \makeatother
 
 \end{document}
