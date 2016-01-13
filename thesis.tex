@@ -4,7 +4,7 @@
 %%==================================================
 
 % 双面打印
-\documentclass[master, fontset=adobe, openany, oneside, zihao=-4, review]{sjtuthesis}
+\documentclass[master, fontset=adobe, openright, twoside, zihao=-4]{sjtuthesis}
 % \documentclass[bachelor, fontset=adobe, openany, oneside, zihao=-4, submit]{sjtuthesis} 
 % \documentclass[master, adobefonts, review]{sjtuthesis} 
 % \documentclass[%
@@ -79,7 +79,9 @@
 \renewcommand\thealgorithm{\Alph{chapter}--\arabic{algorithm}}
 
 %% 附录内容，本科学位论文可以用翻译的文献替代。
+\if@0
 \include{tex/app1}
+\fi
 \include{tex/app2}
 
 \backmatter	% 文后无编号部分 
