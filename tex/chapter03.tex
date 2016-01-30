@@ -9,7 +9,7 @@
 
 只有在拥有可靠的模拟集成电路低阶模型的情况下，电路设计工程师才有可能对电路做出进一步的理论分析，从而指导进一步的设计。
 本章给出了本文最关键的算法：采用拓扑简化方法得到的低阶模型自动生成算法，并给出了其相关的测试结果，佐证了算法的有效性。
-在建立电路拓扑与元件取值之间的关系后，使用GPDD这个便利的工具可方便求取电路拓扑变化情况下的电路性能的条件下，本章对符号化降阶模型生成算法进行全面的介绍。
+在建立电路拓扑与元件取值之间的关系后，使用GPDD这个便利的工具可方便求取电路拓扑变化情况下的电路性能的条件下，本章对符号化低阶模型生成算法进行全面的介绍。
 本文讨论中，我们主要针对运算放大器的设计进行讨论，故我们接下来的讨论将均针对运算放大器设计。
 
 \section{元件重要性选取方法}
@@ -73,12 +73,12 @@
 \section{宏模型自动生成方法}
 \label{subsec:simp:alg:top}
 
-降阶模型的建立，我们将其看作一个电路拓扑元件简化的过程，总的流程可参见图\ref{fig:SimpProcedure}的流程示意。
+低阶模型的建立，我们将其看作一个电路拓扑元件简化的过程，总的流程可参见图\ref{fig:SimpProcedure}的流程示意。
 
 \begin{figure}[!htp]
 	\centering
 	\includegraphics[width=0.5\textwidth]{chap2/SimpProcedure.eps}
-	\bicaption[fig:SimpProcedure]{降阶模型自动生成整体流程}{降阶模型自动生成整体流程}{Fig}{Entire procedure for low-order model generation}
+	\bicaption[fig:SimpProcedure]{低阶模型自动生成整体流程}{低阶模型自动生成整体流程}{Fig}{Entire procedure for low-order model generation}
 \end{figure}
 
 在拿到一个模拟运放电路后，首先通过数值化仿真器（如：HSPICE）利用DC求解对电路进行求解，以获得电路中所有非线性元件（如：MOSFET）的小信号参数。
@@ -346,7 +346,7 @@ Chuang模型中只考虑了第一级电路的输出饱和，对之后级的输�
 {I_0}{S_i}\left( {\frac{{{g_m}}}{{{I_0}}}x} \right)
 \end{equation}
 
-\section{降阶模型生成算法测试结果与分析}
+\section{低阶模型生成算法测试结果与分析}
 \label{sec:simp:res}
 
 以上的算法从GPDD构造步骤开始，均使用C/C++编写，并在个人电脑的Linux Mint 16的虚拟机上进行测试。
@@ -368,7 +368,7 @@ Chuang模型中只考虑了第一级电路的输出饱和，对之后级的输�
 
 本文最常用的测试电路使用如图\ref{fig:two_stage}所示的传统的两级运算放大器，其具体的MOS管的大小以及偏置电压的选取可以参考\ref{subsec:simp:res:size}中的表\ref{tab:TS_CommonSize}和表\ref{tab:TS_Size}中的0号尺寸方案。
 
-\subsection{预处理简化降阶电路模型区别}
+\subsection{预处理简化低阶电路模型区别}
 \label{subsec:simp:res:pre}
 
 首先我们观察电路元件预处理步骤对简化电路的效果。
@@ -406,7 +406,7 @@ Chuang模型中只考虑了第一级电路的输出饱和，对之后级的输�
 可以在图\ref{fig:TS_simp}中看到，这是传统两级运算放大器的简化结果，并在图\ref{fig:TS_Curve}给出了完整电路的HSPICE、GPDD以及简化电路的GPDD仿真频率响应曲线的比较结果。
 在简化的小信号电路图中，可以清晰地看到电路被明显地分为了两级，而且每一级由一个传统的$g_m R C$的极点模型替代，保留下最为关键的电路元件。
 其中第一级中有一个$g_{m2}$、$g_{m4}$和$c_{db2}$组成的小电路结构，这主要起到了运放中通过镜像管M4，给M3提供输入信号的拷贝的作用。
-同时补偿的电容$C_c$和调零电阻$R_z$均在自动生成的简化降阶模型中得到保留。
+同时补偿的电容$C_c$和调零电阻$R_z$均在自动生成的简化低阶模型中得到保留。
 对比\parencite{GRAY-Analog}中的对两级运放的分析，给出了相应的DC增益，可参考下式。
 
 \begin{equation}
@@ -506,7 +506,7 @@ Chuang模型中只考虑了第一级电路的输出饱和，对之后级的输�
 \begin{figure}[!htp]
 	\centering
 	\includegraphics[width=0.4\textwidth]{chap2/res/Nullor2Res.eps}
-	\bicaption[fig:Nullor2Res]{折叠共源共栅运放降阶模型中的Nullor等效}{折叠共源共栅运放降阶模型中的Nullor等效}{Fig}{Equivalent circuit topology for nullor in simplified folded-cascode opamp}
+	\bicaption[fig:Nullor2Res]{折叠共源共栅运放低阶模型中的Nullor等效}{折叠共源共栅运放低阶模型中的Nullor等效}{Fig}{Equivalent circuit topology for nullor in simplified folded-cascode opamp}
 \end{figure}
 
 \subsubsection{多种补偿结构的两级运算放大器拓扑简化结果}
@@ -735,7 +735,7 @@ Current Buffer的尺寸调整方法往往不是很容易。
 \section{本章小结}
 \label{sec:simp:con}
 
-本章对本文的关键技术符号降阶模型的自动生成进行了详细介绍，并分析了加入各个流程原因以及需要考虑的特殊情况。
+本章对本文的关键技术符号低阶模型的自动生成进行了详细介绍，并分析了加入各个流程原因以及需要考虑的特殊情况。
 该算法的有效性与稳定性得到了不同电路拓扑结构，不同尺寸参数情况下的验证。
 通过广泛大量的测试，可以看到本文提出的符号化降阶算法有效并且稳定地降低了电路模型的阶数，并且得到十分合理、易于电路工程师进行理解的简化电路小信号模型。
 这里采用的关键技术为符号化拓扑的简化的方法。这一方法相对于传统的一些符号化简化方法，总结下来，有以下几方面优势：
