@@ -444,35 +444,59 @@
 	\if@twoside
 	  %% 正文页眉页脚
 	  \fancypagestyle{main}{
-	    \fancyhead[LO, RE]{\small\kaishu\sjtu@value@school\sjtu@value@degree\sjtu@label@thesis}
-	    \fancyhead[RO]{\nouppercase{\small\kaishu\leftmark}}
-	    \fancyhead[LE]{\nouppercase{\small\kaishu\sjtu@value@titlemark}}
+	  	\fancyhf{}
+	  	\fancyhead[C]{\small\kaishu\sjtu@value@school\sjtu@value@degree\sjtu@label@thesis}
+	    %\fancyhead[LO, RE]{\small\kaishu\sjtu@value@school\sjtu@value@degree\sjtu@label@thesis}
+	    %\fancyhead[RO]{\nouppercase{\small\kaishu\leftmark}}
+	    %\fancyhead[LE]{\nouppercase{\small\kaishu\sjtu@value@titlemark}}
 	    \fancyfoot[C]{\small ---~{\bfseries\thepage}~---}
 	    \renewcommand{\headheight}{32pt}
 	  }
 	  %% 开章页页眉页脚
 	  \fancypagestyle{plain}{
 	    \fancyhf{}
-	    \fancyhead[LO,RE]{\nouppercase{\small\kaishu\sjtu@value@school\sjtu@value@degree\sjtu@label@thesis}}
-	    \fancyhead[RO]{\nouppercase{\small\kaishu\leftmark}}
-	    \fancyhead[LE]{\nouppercase{\small\kaishu\sjtu@value@titlemark}}
+	    \fancyhead[C]{\nouppercase{\small\kaishu\sjtu@value@school\sjtu@value@degree\sjtu@label@thesis}}
+	    %\fancyhead[LO,RE]{\nouppercase{\small\kaishu\sjtu@value@school\sjtu@value@degree\sjtu@label@thesis}}
+	    %\fancyhead[RO]{\nouppercase{\small\kaishu\leftmark}}
+	    %\fancyhead[LE]{\nouppercase{\small\kaishu\sjtu@value@titlemark}}
 	    \fancyfoot[C]{\small ---~{\bf\thepage}~---}
+	    \renewcommand{\headrulewidth}{1pt}  %页眉线宽，设为0可以去页眉线
+	    %双线页眉的设置                                                 
+	    \makeatletter %双线页眉                                        
+	    \def\headrule{{\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi%
+	    		\hrule\@height 1.0pt \@width\headwidth\vskip1pt%上面线为1pt粗  
+	    		\hrule\@height 0.5pt\@width\headwidth  %下面0.5pt粗            
+	    		\vskip-2\headrulewidth\vskip-1pt}      %两条线的距离1pt        
+	    	\vspace{6mm}}     %双线与下面正文之间的垂直间距              
+	    \makeatother 
 	    \renewcommand{\headheight}{32pt}
 	  }
 	\else
 	%% 正文页
 	\fancypagestyle{main}{
-	  \fancyhead[L]{\small\kaishu\sjtu@value@school\sjtu@value@degree\sjtu@label@thesis}
-	  \fancyhead[R]{\nouppercase{\small\kaishu\leftmark}}
+	  \fancyhf{}
+	  \fancyhead[C]{\small\kaishu\sjtu@value@school\sjtu@value@degree\sjtu@label@thesis}
+	  %\fancyhead[L]{\small\kaishu\sjtu@value@school\sjtu@value@degree\sjtu@label@thesis}
+	  %\fancyhead[R]{\nouppercase{\small\kaishu\leftmark}}
 	  \fancyfoot[C]{\small ---~{\bf\thepage}~---}
 	  \renewcommand{\headheight}{32pt}
 	}
 	\fancypagestyle{plain}{
 	  \fancyhf{}
-	  \fancyhead[L]{\nouppercase{\small\kaishu\sjtu@value@school\sjtu@value@degree\sjtu@label@thesis}}
-	  \fancyhead[R]{\nouppercase{\small\kaishu\leftmark}}
+	  \fancyhead[C]{\nouppercase{\small\kaishu\sjtu@value@school\sjtu@value@degree\sjtu@label@thesis}}
+	  %\fancyhead[L]{\nouppercase{\small\kaishu\sjtu@value@school\sjtu@value@degree\sjtu@label@thesis}}
+	  %\fancyhead[R]{\nouppercase{\small\kaishu\leftmark}}
 	  % \fancyhead[L]{\small {\it\sjtu@value@titlemark}}
 	  \fancyfoot[C]{\small ---~{\bf\thepage}~---}
+	  \renewcommand{\headrulewidth}{1pt}  %页眉线宽，设为0可以去页眉线
+	  %双线页眉的设置                                                 
+	  \makeatletter %双线页眉                                        
+	  \def\headrule{{\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi%
+	  		\hrule\@height 1.0pt \@width\headwidth\vskip1pt%上面线为1pt粗  
+	  		\hrule\@height 0.5pt\@width\headwidth  %下面0.5pt粗            
+	  		\vskip-2\headrulewidth\vskip-1pt}      %两条线的距离1pt        
+	  	\vspace{6mm}}     %双线与下面正文之间的垂直间距              
+	  \makeatother 
 	  \renewcommand{\headheight}{32pt}
 	}
 	\fi
